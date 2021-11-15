@@ -7,5 +7,5 @@
     android:background="?attr/selectableItemBackgroundBorderless"
     android:paddingHorizontal="8dp"
     android:scaleType="fitCenter"
-    app:srcCompat="@drawable/ic_surfnet"
+    style="@style/BottomBarIconSmallRight"
     tools:ignore="ContentDescription,Overdraw" />

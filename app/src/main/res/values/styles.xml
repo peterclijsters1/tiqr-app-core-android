@@ -3,15 +3,14 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryColor</item>
         <item name="colorSecondary">@color/primaryColor</item>
         <item name="colorOnPrimary">@color/primaryTextColor</item>
         <item name="colorError">@color/errorColor</item>
         <item name="android:colorBackground">@color/grey_50</item>
 
-        <item name="android:autofilledHighlight" tools:ignore="NewApi">@android:color/transparent
-        </item>
+        <item name="android:autofilledHighlight" tools:ignore="NewApi">@android:color/transparent</item>
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="android:textColorLink">@color/linkColor</item>
         <item name="android:textViewStyle">@style/AppTheme.TextView</item>
@@ -29,6 +28,7 @@
 
     <style name="AppTheme.Button.White">
         <item name="backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/basicColor</item>
     </style>
 
     <style name="AppTheme.Button.Red">
@@ -43,21 +43,27 @@
 
     <style name="AppTheme.TextAppearance.Label">
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/basicColor</item>
+        <item name="android:fontFamily">@font/nunito_extrabold</item>
     </style>
 
     <style name="AppTheme.TextAppearance.Title" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/basicColor</item>
+        <item name="android:fontFamily">@font/nunito_extrabold</item>
     </style>
 
     <style name="AppTheme.TextAppearance.Error">
         <item name="android:textColor">?attr/colorError</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/nunito_extrabold</item>
     </style>
 
     <!-- Widgets -->
     <style name="AppTheme.TextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:textAppearance">@style/AppTheme.TextAppearance</item>
         <item name="android:lineSpacingMultiplier">1.1</item>
+        <item name="android:fontFamily">@font/sourcesanspro_regular</item>
     </style>
 
     <style name="AppTheme.Card" parent="Widget.MaterialComponents.CardView">
@@ -79,27 +85,5 @@
         <item name="android:inputType">numberPassword</item>
         <item name="android:maxLength">1</item>
         <item name="android:maxLines">1</item>
-    </style>
-
-    <style name="ScanButtonIcon" parent="Widget.MaterialComponents.Button.Icon">
-        <item name="android:textColor">@color/scanColor</item>
-    </style>
-
-    <style name="BottomBarIconSmallRight">
-        <item name="android:src">@drawable/logo_tiqr_small</item>
-    </style>
-
-    <style name="BottomBarIconSmallLeft">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:src">@drawable/ic_info</item>
-    </style>
-
-    <style name="TopBarIconSmall">
-        <item name="android:background">@drawable/toolbar_background</item>
-    </style>
-
-    <style name="AboutSurfIcon">
-        <item name="drawableBottomCompat">@drawable/ic_surfnet</item>
     </style>
 </resources>
