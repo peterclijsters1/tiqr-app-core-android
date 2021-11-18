@@ -16,7 +16,7 @@ jobs:
 
         # Builds the release artifacts of the library
       - name: Release build
-        run: ./gradlew :tiqr-client-android:assembleRelease
+        run: ./gradlew :tiqr-app-core-android:assembleRelease
 
         # Generates other artifacts
       - name: Source jar
