@@ -15,9 +15,12 @@ jobs:
         uses: actions/checkout@v2
 
         # Builds the release artifacts of the library
-      - name: Release build
-        run: ./gradlew :tiqr-app-core-android:assembleRelease
-
+      - name: Release build for core
+        run: ./gradlew :core:assembleRelease
+        
+      - name: Release build for data
+        run: ./gradlew :data:assembleRelease
+        
         # Generates other artifacts
       - name: Source jar
         run: ./gradlew androidSourcesJar
