@@ -30,7 +30,6 @@
 package org.tiqr.core.util
 
 object Urls {
-    const val URL_TIQR = "https://tiqr.org"
     const val URL_SURFNET = "https://surf.nl"
     const val URL_EGENIQ = "https://www.egeniq.com"
     const val URL_KEEN = "https://www.keen.design"

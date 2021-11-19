@@ -32,7 +32,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 app:cardElevation="6dp"
-                app:openBrowser="@{Urls.URL_TIQR}">
+                app:openBrowser="@{@string/app_url}">
 
                 <TextView
                     android:layout_width="match_parent"
