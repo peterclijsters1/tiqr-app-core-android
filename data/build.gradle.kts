@@ -37,14 +37,25 @@ android {
         buildConfigField("int", "PROTOCOL_VERSION", "2")
         buildConfigField("boolean", "PROTOCOL_COMPATIBILITY_MODE", "true")
 
-        buildConfigField("String", "TIQR_ENROLL_SCHEME", "\"${project.property("schemeEnroll") as String}://\"")
-        buildConfigField("String", "TIQR_AUTH_SCHEME", "\"${project.property("schemeAuth") as String}://\"")
+        buildConfigField(
+            "String",
+            "TIQR_ENROLL_SCHEME",
+            "\"${project.property("schemeEnroll") as String}://\""
+        )
+        buildConfigField(
+            "String",
+            "TIQR_AUTH_SCHEME",
+            "\"${project.property("schemeAuth") as String}://\""
+        )
     }
 
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
 
         buildFeatures {
@@ -192,7 +203,10 @@ publishing {
 //}
 
     signing {
-        useGpgCmd()
+        val signingKeyId = secureProperties.getProperty("signing.keyId")
+        val signingKey = secureProperties.getProperty("signing.key")
+        val signingPassword = secureProperties.getProperty("signing.password")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
         sign(publishing.publications["mavenAndroid"])
     }
 }
