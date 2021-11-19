@@ -189,18 +189,18 @@ publishing {
         }
     }
 
-//    repositories {
-//        maven {
-//            name = "sonatype"
-//            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-//            val snapshotRepo = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-//            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotRepo else releasesRepoUrl)
-//            credentials {
-//                username = secureProperties.getProperty("USERNAME")
-//                password =secureProperties.getProperty("PASSWORD")
-//            }
-//        }
-//}
+    repositories {
+        maven {
+            name = "sonatype"
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotRepo = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotRepo else releasesRepoUrl)
+            credentials {
+                username = secureProperties.getProperty("USERNAME")
+                password =secureProperties.getProperty("PASSWORD")
+            }
+        }
+}
 
     signing {
         val signingKeyId = secureProperties.getProperty("signing.keyId")
