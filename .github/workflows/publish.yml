@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Allow manually triggering this workflow
   release:
     # We'll run this workflow when a new GitHub release is created
-    types: [released]
+    types: [ released ]
 
 jobs:
   publish:
@@ -17,14 +17,15 @@ jobs:
         # Builds the release artifacts of the library
       - name: Release build for core
         run: ./gradlew :core:assembleRelease
-        
+
       - name: Release build for data
         run: ./gradlew :data:assembleRelease
-        
+
         # Generates other artifacts
       - name: Source jar
         run: ./gradlew sourcesJar
-
+      - name: Get key
+        run: echo "The selected key is  ${{ secrets.SIGNING_KEY_ID }}"
         # Runs upload, and then closes & releases the repository
       - name: Publish to MavenCentral
         run: ./gradlew publishMavenAndroidPublicationToSonatypeRepository --max-workers 1
@@ -34,3 +35,4 @@ jobs:
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+
