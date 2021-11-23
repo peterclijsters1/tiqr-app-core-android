@@ -27,7 +27,7 @@ plugins {
 }
 
 
-//apply(from = "${rootDir}/scripts/publish-root.gradle")
+apply(from = "${rootDir}/scripts/publish-root.gradle")
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
