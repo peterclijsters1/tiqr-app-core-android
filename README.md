@@ -1,27 +1,31 @@
-# tiqr-client-android
+# tiqr-app-core-android
 
-tiqr client for Android
+SURF.nl library for Android
 
-# Create a store build
+# Using library in your project
 
-To create a release build intented to be released on the play store, follow these steps:
-1. Bump the app version
-2. Set environment variables:
+To use SURF library in your project:
 
-Environment variables for Fastlane
-```bash
-export TIQR_FASTLANE_STORE_FILE=~/.signing/Tiqr.keystore
-export TIQR_FASTLANE_STORE_PASS=<your_keystore_pass>
-export TIQR_FASTLANE_KEY_ALIAS=<your_key_alias>
-export TIQR_FASTLANE_KEY_PASS=<your_key_pass>
+1. Add sonatype to repositories
 ```
-*Note: adapt above to your own data*
-
-3. Run the Fastlane command:
-```bash
-cd fastlane
-fastlane android storebuild
+   maven {
+        setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+   }
 ```
-*If you don't have fastlane, install it via the fastlane instructions.*
-
-4. The apk and mapping files are now available in the `distribution` subdir. 
+2. Add core and data dependencies (versions might be different)
+```
+    implementation("org.tiqr:core:A.B.C")
+    implementation("org.tiqr:data:X.Y.Z")
+```
+3. Setup Coil's ImageLoader
+```
+    Coil.setImageLoader(ImageLoader.Builder(context = this)
+        .crossfade(enable = true)
+        .okHttpClient {
+            imageOkHttpClient
+                .cache(CoilUtils.createDefaultCache(context = this))
+                .build()
+        }
+        .build())
+```
+4. Override resources, styles, strings and MainActivity (if needed)
