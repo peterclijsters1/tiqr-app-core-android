@@ -196,9 +196,9 @@ publishing {
 //    }
 
     signing {
-        val signingKeyId = secureProperties.getProperty("signing.keyId")
-        val signingKey = secureProperties.getProperty("signing.key")
-        val signingPassword= secureProperties.getProperty("signing.password")
+        val signingKeyId = rootProject.ext["signing.keyId"] as String
+        val signingKey = rootProject.ext["signing.key"] as String
+        val signingPassword= rootProject.ext["signing.password"] as String
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
         sign(publishing.publications["mavenAndroid"])
     }
