@@ -198,12 +198,12 @@ afterEvaluate {
 //        }
 //    }
     }
-}
 
-signing {
-    val signingKeyId = secureProperties.getProperty("signing.keyId")
-    val signingKey = secureProperties.getProperty("signing.key")
-    val signingPassword = secureProperties.getProperty("signing.password")
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications["core"])
+    signing {
+        val signingKeyId = secureProperties.getProperty("signing.keyId")
+        val signingKey = secureProperties.getProperty("signing.key")
+        val signingPassword = secureProperties.getProperty("signing.password")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(publishing.publications["core"])
+    }
 }
