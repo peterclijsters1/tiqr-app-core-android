@@ -127,6 +127,7 @@ tasks {
 publishing {
     publications {
         register<MavenPublication>("mavenAndroid") {
+            groupId = "org.tiqr"
             artifactId = "core"
 
             afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
