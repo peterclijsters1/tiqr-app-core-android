@@ -124,64 +124,66 @@ tasks {
         from(android.sourceSets.getByName("main").java.srcDirs)
     }
 }
-publishing {
-    publications {
-        register<MavenPublication>("mavenAndroid") {
-            groupId = "org.tiqr"
-            artifactId = "core"
 
-            afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
-            artifact(tasks.getByName("sourcesJar"))
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("mavenAndroid") {
+                groupId = "org.tiqr"
+                artifactId = "core"
 
-            pom {
-                name.set("core")
-                url.set("https://github.com/SURFnet/tiqr-app-core-android")
-                description.set("refactoring original tiqr project")
-                developers {
-                    developer {
-                        name.set("sara hachem")
-                        email.set("sara@egeniq.com")
-                    }
-                    developer {
-                        name.set("Dmitry Kovalenko")
-                        email.set("dima@egeniq.com")
-                    }
-                }
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                scm {
-                    connection.set("https://github.com/SURFnet/tiqr-app-core-android.git")
+                afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+                artifact(tasks.getByName("sourcesJar"))
+
+                pom {
+                    name.set("core")
                     url.set("https://github.com/SURFnet/tiqr-app-core-android")
-                }
-
-                withXml {
-                    fun groovy.util.Node.addDependency(dependency: Dependency, scope: String) {
-                        appendNode("dependency").apply {
-                            appendNode("groupId", dependency.group)
-                            appendNode("artifactId", dependency.name)
-                            appendNode("version", dependency.version)
-                            appendNode("scope", scope)
+                    description.set("refactoring original tiqr project")
+                    developers {
+                        developer {
+                            name.set("sara hachem")
+                            email.set("sara@egeniq.com")
+                        }
+                        developer {
+                            name.set("Dmitry Kovalenko")
+                            email.set("dima@egeniq.com")
                         }
                     }
-
-                    asNode().appendNode("dependencies").let { dependencies ->
-                        // List all "api" dependencies as "compile" dependencies
-                        configurations.api.get().allDependencies.forEach {
-                            dependencies.addDependency(it, "compile")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                         }
-                        // List all "implementation" dependencies as "runtime" dependencies
-                        configurations.implementation.get().allDependencies.forEach {
-                            dependencies.addDependency(it, "runtime")
+                    }
+                    scm {
+                        connection.set("https://github.com/SURFnet/tiqr-app-core-android.git")
+                        url.set("https://github.com/SURFnet/tiqr-app-core-android")
+                    }
+
+                    withXml {
+                        fun groovy.util.Node.addDependency(dependency: Dependency, scope: String) {
+                            appendNode("dependency").apply {
+                                appendNode("groupId", dependency.group)
+                                appendNode("artifactId", dependency.name)
+                                appendNode("version", dependency.version)
+                                appendNode("scope", scope)
+                            }
+                        }
+
+                        asNode().appendNode("dependencies").let { dependencies ->
+                            // List all "api" dependencies as "compile" dependencies
+                            configurations.api.get().allDependencies.forEach {
+                                dependencies.addDependency(it, "compile")
+                            }
+                            // List all "implementation" dependencies as "runtime" dependencies
+                            configurations.implementation.get().allDependencies.forEach {
+                                dependencies.addDependency(it, "runtime")
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
 //    repositories {
 //        maven {
@@ -195,12 +197,13 @@ publishing {
 //            }
 //        }
 //    }
-
-    signing {
-        val signingKeyId = secureProperties.getProperty("signing.keyId")
-        val signingKey = secureProperties.getProperty("signing.key")
-        val signingPassword= secureProperties.getProperty("signing.password")
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications["mavenAndroid"])
     }
+}
+
+signing {
+    val signingKeyId = secureProperties.getProperty("signing.keyId")
+    val signingKey = secureProperties.getProperty("signing.key")
+    val signingPassword = secureProperties.getProperty("signing.password")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign(publishing.publications["mavenAndroid"])
 }
