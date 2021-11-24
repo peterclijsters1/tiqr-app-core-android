@@ -128,7 +128,7 @@ tasks {
 afterEvaluate {
     publishing {
         publications {
-            register<MavenPublication>("mavenAndroid") {
+            create<MavenPublication>("core") {
                 groupId = "org.tiqr"
                 artifactId = "core"
 
@@ -205,5 +205,5 @@ signing {
     val signingKey = secureProperties.getProperty("signing.key")
     val signingPassword = secureProperties.getProperty("signing.password")
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-    sign(publishing.publications["mavenAndroid"])
+    sign(publishing.publications["core"])
 }
