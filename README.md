@@ -9,7 +9,7 @@ To use SURF library in your project:
 1. Add sonatype to repositories
 ```
    maven {
-        setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        setUrl("https://s01.oss.sonatype.org/content/repositories/releases/")
    }
 ```
 2. Add core and data dependencies (versions might be different)
