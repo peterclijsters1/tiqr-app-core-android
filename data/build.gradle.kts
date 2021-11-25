@@ -133,7 +133,7 @@ tasks {
 }
 publishing {
     publications {
-        register<MavenPublication>("mavenAndroid") {
+        create<MavenPublication>("data") {
             artifactId = "data"
 
             afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
@@ -192,21 +192,21 @@ publishing {
     repositories {
         maven {
             name = "sonatype"
-            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/releases/")
             val snapshotRepo = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
             url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotRepo else releasesRepoUrl)
             credentials {
-                username = secureProperties.getProperty("USERNAME")
-                password =secureProperties.getProperty("PASSWORD")
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_PASSWORD")
             }
         }
-}
+    }
 
     signing {
-        val signingKeyId = secureProperties.getProperty("signing.keyId")
-        val signingKey = secureProperties.getProperty("signing.key")
-        val signingPassword = secureProperties.getProperty("signing.password")
+        val signingKeyId = System.getenv("SIGNING_KEY_ID")
+        val signingKey = System.getenv("SIGNING_KEY")
+        val signingPassword = System.getenv("SIGNING_PASSWORD")
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications["mavenAndroid"])
+        sign(publishing.publications["data"])
     }
 }
