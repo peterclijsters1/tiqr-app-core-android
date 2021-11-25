@@ -116,7 +116,7 @@ val secureProperties = loadCustomProperties(file("../local.properties"))
 }
 
 group = "org.tiqr"
-version = "0.0.19-SNAPSHOT"
+version = "0.0.19"
 
 tasks {
     register("sourcesJar", Jar::class) {
@@ -191,12 +191,21 @@ publishing {
             credentials {
                 username = System.getenv("OSSRH_USERNAME")
                 password = System.getenv("OSSRH_PASSWORD")
+//                username = secureProperties.getProperty("USERNAME")
+//                password = secureProperties.getProperty("PASSWORD")
             }
         }
     }
 
     signing {
-        isRequired = false
+//        isRequired = false
+//        val signingKeyId = secureProperties.getProperty("signing.keyId")
+//        val signingKey = secureProperties.getProperty("signing.key")
+//        val signingPassword= secureProperties.getProperty("signing.password")
+        val signingKeyId = System.getenv("SIGNING_KEY_ID")
+        val signingKey = System.getenv("SIGNING_KEY")
+        val signingPassword = System.getenv("SIGNING_PASSWORD")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
         sign(publishing.publications["core"])
     }
 }
