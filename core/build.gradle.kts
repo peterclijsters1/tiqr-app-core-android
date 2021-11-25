@@ -116,7 +116,7 @@ val secureProperties = loadCustomProperties(file("../local.properties"))
 }
 
 group = "org.tiqr"
-version = "0.0.20"
+version = "0.0.21"
 
 tasks {
     register("sourcesJar", Jar::class) {
