@@ -20,6 +20,7 @@ jobs:
         with:
           version-source: file
           version-file: ${{ env.VERSION_FILE_NAME }}
+          release-version-cut-prerelease: ${{ true }}
           next-version-increment-patch: ${{ true }}
           next-version-increment-minor: ${{ false }}
           next-version-increment-major: ${{ false }}
