@@ -16,20 +16,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Get version fragment to bump
-        id: getVersionFragment
-        run: |
-          echo "patch version will be incremented"
-          echo "::set-env name=VERSION_FRAGMENT::patch"
-
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.1.1
         with:
           version-source: file
           version-file: ${{ env.VERSION_FILE_NAME }}
-          next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
-          next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
-          next-version-increment-major: ${{ contains(env.VERSION_FRAGMENT, 'major') }}
+          next-version-increment-patch: ${{ true }}
+          next-version-increment-minor: ${{ false }}
+          next-version-increment-major: ${{ false }}
 
         # Builds the release artifacts of the library
       - name: Release build for core
