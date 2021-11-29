@@ -6,8 +6,8 @@ on:
     # We'll run this workflow when a new GitHub release is created
     types: [ released ]
 env:
-  VERSION_FILE_NAME: 'core_version.txt'
-  VERSION_BUMP_FILE: 'minor'
+  VERSION_FILE_NAME: core_version.txt
+  VERSION_BUMP_FILE: minor
 jobs:
   publish:
     name: Release build and publish
