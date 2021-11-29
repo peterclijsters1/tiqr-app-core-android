@@ -7,6 +7,7 @@ on:
     types: [ released ]
 env:
   VERSION_FILE_NAME: core_version.txt
+  VERSION_REPLACE_PATTERN: '"version": "\1",'
 jobs:
   publish:
     name: Release build and publish
@@ -42,6 +43,7 @@ jobs:
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+
       - name: Update version file
         id: versionFileUpdate
         run: |
