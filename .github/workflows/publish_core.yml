@@ -5,7 +5,9 @@ on:
   release:
     # We'll run this workflow when a new GitHub release is created
     types: [ released ]
-
+env:
+  VERSION_FILE_NAME: 'core_version.txt'
+  VERSION_BUMP_FILE: 'minor'
 jobs:
   publish:
     name: Release build and publish
@@ -13,6 +15,22 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+
+      - name: Get version fragment to bump
+        id: getVersionFragment
+        run: |
+          read -r versionFragment < ${{ env.VERSION_BUMP_FILE }}
+          echo "'$versionFragment' version will be incremented"
+          echo "::set-env name=VERSION_FRAGMENT::${versionFragment}"
+
+      - name: Generate versions
+        uses: HardNorth/github-version-generate@v1.1.1
+        with:
+          version-source: file
+          version-file: ${{ env.VERSION_FILE_NAME }}
+          next-version-increment-patch: ${{ contains(env.VERSION_FRAGMENT, 'patch') }}
+          next-version-increment-minor: ${{ contains(env.VERSION_FRAGMENT, 'minor') }}
+          next-version-increment-major: ${{ contains(env.VERSION_FRAGMENT, 'major') }}
 
         # Builds the release artifacts of the library
       - name: Release build for core
