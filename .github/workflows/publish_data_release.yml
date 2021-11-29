@@ -1,4 +1,4 @@
-name: Publish Core
+name: Publish Data Release
 
 on:
   workflow_dispatch: # Allow manually triggering this workflow
@@ -6,8 +6,7 @@ on:
     # We'll run this workflow when a new GitHub release is created
     types: [ released ]
 env:
-  VERSION_FILE_NAME: core_version.txt
-  VERSION_BUMP_FILE: version_fragment.txt
+  VERSION_FILE_NAME: data_version.txt
 jobs:
   publish:
     name: Release build and publish
@@ -26,16 +25,16 @@ jobs:
           next-version-increment-major: ${{ false }}
 
         # Builds the release artifacts of the library
-      - name: Release build for core
-        run: ./gradlew :core:assembleRelease
+      - name: Release build for data
+        run: ./gradlew :data:assembleRelease
 
         # Generates other artifacts
       - name: Source jar
         run: ./gradlew sourcesJar
 
         # Runs upload, and then closes & releases the repository
-      - name: Publish to Core to Sonatype
-        run: ./gradlew publishCorePublicationToSonatypeRepository --max-workers 1
+      - name: Publish to Data to Sonatype
+        run: ./gradlew publishDataPublicationToSonatypeRepository --max-workers 1
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

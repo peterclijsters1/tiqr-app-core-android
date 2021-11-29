@@ -123,7 +123,7 @@ android {
 }
 
 group = "org.tiqr"
-version = "0.0.6"
+version = System.getenv("CURRENT_VERSION")
 
 tasks {
     register("sourcesJar", Jar::class) {
