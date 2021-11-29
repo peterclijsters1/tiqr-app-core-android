@@ -7,7 +7,6 @@ on:
     types: [ released ]
 env:
   VERSION_FILE_NAME: core_version.txt
-  VERSION_REPLACE_PATTERN: '"version": "\1",'
 jobs:
   publish:
     name: Release build and publish
