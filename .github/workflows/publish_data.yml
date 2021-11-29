@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Data
 
 on:
   workflow_dispatch: # Allow manually triggering this workflow
