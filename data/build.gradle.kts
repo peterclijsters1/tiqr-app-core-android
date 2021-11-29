@@ -194,7 +194,7 @@ publishing {
             name = "sonatype"
             val releasesRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/releases/")
             val snapshotRepo = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotRepo else releasesRepoUrl)
+            url = uri(if (version.toString().contains("SNAPSHOT")) snapshotRepo else releasesRepoUrl)
             credentials {
                 username = System.getenv("OSSRH_USERNAME")
                 password = System.getenv("OSSRH_PASSWORD")
