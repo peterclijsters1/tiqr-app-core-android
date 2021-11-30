@@ -27,22 +27,22 @@ jobs:
           next-version-increment-major: ${{ false }}
 
         # Builds the release artifacts of the library
-#      - name: Release build for core
-#        run: ./gradlew :core:assembleRelease
-#
-#        # Generates other artifacts
-#      - name: Source jar
-#        run: ./gradlew sourcesJar
+      - name: Release build for core
+        run: ./gradlew :core:assembleRelease
 
-        # Runs upload, and then closes & releases the repository
-#      - name: Publish to Core to Sonatype
-#        run: ./gradlew publishCorePublicationToSonatypeRepository --max-workers 1
-#        env:
-#          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-#          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-#          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-#          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-#          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        # Generates other artifacts
+      - name: Source jar
+        run: ./gradlew sourcesJar
+
+         Runs upload, and then closes & releases the repository
+      - name: Publish to Core to Sonatype
+        run: ./gradlew publishCorePublicationToSonatypeRepository --max-workers 1
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       - name: Setup git credentials
         run: |
           git config user.name 'GitHub Publish Core Snapshot action'
