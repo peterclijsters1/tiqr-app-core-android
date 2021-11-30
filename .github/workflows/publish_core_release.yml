@@ -43,6 +43,11 @@ jobs:
 #          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
 #          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 #          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      - name: Setup git credentials
+        run: |
+          git config user.name 'SURF.net'
+          git config user.email 'noreply@surf.nl'
+          git config user.password ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update version file
         id: versionFileUpdate
