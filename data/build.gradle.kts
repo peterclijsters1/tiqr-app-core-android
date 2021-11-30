@@ -128,7 +128,7 @@ version =
     if (System.getenv("IS_RELEASE") == "true") {
         System.getenv("NEXT_VERSION").substring(0, System.getenv("NEXT_VERSION").indexOf("-"))
     } else {
-        System.getenv("NEXT_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
+        System.getenv("CURRENT_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
     }
 tasks {
     register("sourcesJar", Jar::class) {
