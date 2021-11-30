@@ -6,6 +6,7 @@ on:
     # We'll run this workflow when a new GitHub release is created
     types: [ released ]
 env:
+  IS_RELEASE: false
   VERSION_FILE_NAME: core_version.txt
   TMP_SUFFIX: _updated
 jobs:

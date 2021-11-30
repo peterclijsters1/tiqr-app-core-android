@@ -116,7 +116,13 @@ val secureProperties = loadCustomProperties(file("../local.properties"))
 }
 
 group = "org.tiqr"
-version = System.getenv("NEXT_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
+
+version =
+    if (System.getenv("IS_RELEASE") == "true") {
+        System.getenv("NEXT_VERSION").replace("-BETA-\\d+", "")
+    } else {
+        System.getenv("NEXT_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
+    }
 
 tasks {
     register("sourcesJar", Jar::class) {
