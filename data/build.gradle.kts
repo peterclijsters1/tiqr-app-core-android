@@ -125,7 +125,9 @@ android {
 group = "org.tiqr"
 
 version =
-    if (System.getenv("IS_RELEASE") == "true") {
+    if (System.getenv("CORE_VERSION") == null) {
+        "1.0.0"
+    } else if (System.getenv("IS_RELEASE") == "true") {
         System.getenv("DATA_VERSION").substring(0, System.getenv("DATA_VERSION").indexOf("-"))
     } else {
         System.getenv("DATA_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")

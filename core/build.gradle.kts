@@ -118,7 +118,9 @@ val secureProperties = loadCustomProperties(file("../local.properties"))
 group = "org.tiqr"
 
 version =
-    if (System.getenv("IS_RELEASE") == "true") {
+    if (System.getenv("CORE_VERSION") == null) {
+       "1.0.0"
+    } else if (System.getenv("IS_RELEASE") == "true") {
         System.getenv("CORE_VERSION").substring(0, System.getenv("CORE_VERSION").indexOf("-"))
     } else {
         System.getenv("CORE_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
