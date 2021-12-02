@@ -126,9 +126,9 @@ group = "org.tiqr"
 
 version =
     if (System.getenv("IS_RELEASE") == "true") {
-        System.getenv("NEXT_VERSION").substring(0, System.getenv("NEXT_VERSION").indexOf("-"))
+        System.getenv("CURRENT_DATA_VERSION").substring(0, System.getenv("CURRENT_DATA_VERSION").indexOf("-"))
     } else {
-        System.getenv("CURRENT_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
+        System.getenv("CURRENT_DATA_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
     }
 tasks {
     register("sourcesJar", Jar::class) {
