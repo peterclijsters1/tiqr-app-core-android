@@ -43,7 +43,7 @@ jobs:
 
       - name: Set CORE_VERSION
         run: |
-          echo "CORE_VERSION='${{ env.CURRENT_VERSION }}'" >> $GITHUB_ENV
+          echo "CORE_VERSION=${{ env.CURRENT_VERSION }}" >> $GITHUB_ENV
 
         # Builds the release artifacts of the library
       - name: Release build for core
