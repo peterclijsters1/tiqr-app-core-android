@@ -26,7 +26,9 @@ jobs:
           next-version-increment-patch: ${{ true }}
           next-version-increment-minor: ${{ false }}
           next-version-increment-major: ${{ false }}
-
+      - name: Set CURRENT_DATA_VERSION
+        run: |
+          echo "CURRENT_DATA_VERSION='${{ env.NEXT_VERSION }}'" >> $GITHUB_ENV
         # Builds the release artifacts of the library
       - name: Release build for data
         run: ./gradlew :data:assembleRelease
