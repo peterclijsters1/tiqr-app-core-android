@@ -33,16 +33,15 @@
             android:id="@+id/scan_button"
             style="@style/ScanButtonIcon"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:text="@string/scan_button"
-            app:icon="@drawable/ic_scan"
             app:iconGravity="textEnd"
             app:iconSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent=".5" />
+            app:layout_constraintWidth_percent=".85" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
