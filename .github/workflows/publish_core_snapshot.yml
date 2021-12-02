@@ -27,9 +27,9 @@ jobs:
           next-version-increment-minor: ${{ false }}
           next-version-increment-major: ${{ false }}
 
-      - name: Set CURRENT_DATA_VERSION
+      - name: Set DATA_VERSION
         run: |
-          echo "CURRENT_DATA_VERSION='${{ env.CURRENT_VERSION }}'" >> $GITHUB_ENV
+          echo "DATA_VERSION='${{ env.CURRENT_VERSION }}'" >> $GITHUB_ENV
 
       - name: Generate versions
         uses: HardNorth/github-version-generate@v1.1.1
@@ -40,6 +40,10 @@ jobs:
           next-version-increment-patch: ${{ false }}
           next-version-increment-minor: ${{ false }}
           next-version-increment-major: ${{ false }}
+
+      - name: Set CORE_VERSION
+        run: |
+          echo "CORE_VERSION='${{ env.CURRENT_VERSION }}'" >> $GITHUB_ENV
 
         # Builds the release artifacts of the library
       - name: Release build for core
