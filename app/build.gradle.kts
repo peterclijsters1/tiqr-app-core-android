@@ -11,14 +11,14 @@ android {
     buildToolsVersion = libs.versions.android.buildTools.get()
 
     defaultConfig {
-        applicationId = "org.nl.sample"
+        applicationId = "org.tiqr.sample"
         versionCode = 1
         versionName = "1.0.0"
 
         minSdk = libs.versions.android.sdk.min.get().toInt()
         targetSdk = libs.versions.android.sdk.target.get().toInt()
 
-        testInstrumentationRunner = "org.nl.sample.runner.HiltAndroidTestRunner"
+        testInstrumentationRunner = "org.tiqr.sample.runner.HiltAndroidTestRunner"
 
         manifestPlaceholders["schemeEnroll"] = project.property("schemeEnroll") as String
         manifestPlaceholders["schemeAuth"] = project.property("schemeAuth") as String

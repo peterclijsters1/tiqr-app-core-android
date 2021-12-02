@@ -27,7 +27,7 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.nl
+package org.tiqr
 
 import android.app.Application
 import coil.Coil
@@ -36,7 +36,7 @@ import coil.ImageLoaderFactory
 import coil.util.CoilUtils
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
-import org.nl.sample.BuildConfig
+import org.tiqr.sample.BuildConfig
 import timber.log.Timber
 import javax.inject.Inject
 
