@@ -36,12 +36,12 @@ import coil.ImageLoaderFactory
 import coil.util.CoilUtils
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
-import org.tiqr.authenticator.BuildConfig
+import org.tiqr.sample.BuildConfig
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class TiqrApplication : Application(), ImageLoaderFactory {
+class SampleApplication : Application(), ImageLoaderFactory {
     @Inject
     internal lateinit var imageOkHttpClient: OkHttpClient.Builder
 

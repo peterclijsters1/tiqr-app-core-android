@@ -11,14 +11,14 @@ android {
     buildToolsVersion = libs.versions.android.buildTools.get()
 
     defaultConfig {
-        applicationId = "org.tiqr.authenticator"
-        versionCode = 30
-        versionName = "4.0.0"
+        applicationId = "org.tiqr.sample"
+        versionCode = 1
+        versionName = "1.0.0"
 
         minSdk = libs.versions.android.sdk.min.get().toInt()
         targetSdk = libs.versions.android.sdk.target.get().toInt()
 
-        testInstrumentationRunner = "org.tiqr.authenticator.runner.HiltAndroidTestRunner"
+        testInstrumentationRunner = "org.tiqr.sample.runner.HiltAndroidTestRunner"
 
         manifestPlaceholders["schemeEnroll"] = project.property("schemeEnroll") as String
         manifestPlaceholders["schemeAuth"] = project.property("schemeAuth") as String
@@ -135,8 +135,4 @@ configurations {
         exclude(group = "com.google.firebase", module = "firebase-analytics")
         exclude(group = "com.google.firebase", module = "firebase-measurement-connector")
     }
-}
-
-apply {
-    plugin("com.google.gms.google-services")
 }

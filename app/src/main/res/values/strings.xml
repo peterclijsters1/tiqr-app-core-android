@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
-    <string name="app_name" translatable="false">tiqr</string>
+
+    <string name="app_name" translatable="false">sampleApp</string>
+
+    <!--    Strings below override strings from core module that are app-specific-->
+
+    <string name="start_welcome">this is a sample text welcome message</string>
+
+    <string name="start_instructions">Put instructions here</string>
+
+    <string name="scan_permission_required_message">For scanning a QR code, the sample needs access to the camera.</string>
+
+    <string name="enroll_pin_title">Choose a unique PIN for your sample app</string>
+
+    <string name="account_id">sample account id</string>
+
+    <string name="auth_pin_title">Enter your PIN</string>
+
+    <string name="notification_channel_description">Notifications for messages from sample app</string>
 </resources>
