@@ -86,7 +86,7 @@
     </style>
 
     <style name="BottomBarIconSmallRight">
-        <item name="android:src">@drawable/logo_tiqr_small</item>
+        <item name="android:src">@drawable/logo_power_by_surf</item>
     </style>
 
     <style name="BottomBarIconSmallLeft">
