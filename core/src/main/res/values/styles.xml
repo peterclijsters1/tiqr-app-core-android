@@ -100,11 +100,11 @@
     </style>
 
     <style name="AboutSurfIcon">
-        <item name="drawableBottomCompat">@drawable/surfnet_background</item>
+        <item name="android:src">@drawable/logo_surf_big</item>
     </style>
 
     <style name="AboutAppIcon">
-        <item name="drawableBottomCompat">@drawable/logo_tiqr_small</item>
+        <item name="android:src">@drawable/logo_tiqr_small</item>
     </style>
 
 </resources>
