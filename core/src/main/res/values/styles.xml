@@ -96,7 +96,7 @@
     </style>
 
     <style name="TopBarIconSmall">
-        <item name="android:background">@drawable/toolbar_background</item>
+        <item name="android:background">@drawable/logo_tiqr_small</item>
     </style>
 
     <style name="AboutSurfIcon">
