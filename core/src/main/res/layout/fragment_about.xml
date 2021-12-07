@@ -51,6 +51,7 @@
                         tools:text="tiqr &#8226; v4.0.0" />
 
                     <ImageView
+                        android:adjustViewBounds="true"
                         android:layout_gravity="center_horizontal"
                         style="@style/AboutAppIcon"
                         android:layout_width="120dp"
