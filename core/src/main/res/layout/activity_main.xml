@@ -15,7 +15,6 @@
             android:id="@+id/appbar_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/TopBarIconSmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -24,7 +23,16 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar" />
+                android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar" >
+
+                <ImageView
+                    android:layout_gravity="center"
+                    style="@style/TopBarIconSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.fragment.app.FragmentContainerView
