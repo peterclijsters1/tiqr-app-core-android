@@ -33,21 +33,6 @@
     </fragment>
 
     <action
-        android:id="@+id/open_browser"
-        app:destination="@id/browser"
-        app:launchSingleTop="true">
-
-        <argument
-            android:name="url"
-            app:argType="string"
-            app:nullable="false" />
-    </action>
-
-    <browser
-        android:id="@+id/browser"
-        tools:layout="@layout/destination_browser" />
-
-    <action
         android:id="@+id/open_about"
         app:destination="@id/about"
         app:launchSingleTop="true" />

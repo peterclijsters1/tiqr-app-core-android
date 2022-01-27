@@ -30,18 +30,22 @@
 package org.tiqr.core.util.databinding
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.text.Spanned
 import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.net.toUri
 import androidx.core.text.parseAsHtml
 import androidx.databinding.BindingAdapter
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -76,11 +80,11 @@ fun TextView.htmlText(@StringRes html: Int) {
 fun TextView.linkifyWeb(enable: Boolean) {
     if (enable) {
         BetterLinkMovementMethod
-                .linkify(Linkify.WEB_URLS, this)
-                .setOnLinkClickListener { _, url ->
-                    findNavController().navigate(MainNavDirections.openBrowser(url))
-                    true
-                }
+            .linkify(Linkify.WEB_URLS, this)
+            .setOnLinkClickListener { _, url ->
+                context.openURL(url)
+                true
+            }
     }
 }
 
@@ -99,7 +103,7 @@ fun TextView.linkifyWebWith(text: String?) {
         BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, this)
     }.run {
         setOnLinkClickListener { _, url ->
-            findNavController().navigate(MainNavDirections.openBrowser(url))
+            context.openURL(url)
             true
         }
     }
@@ -121,7 +125,26 @@ fun TextView.appName(appName: String) {
 @BindingAdapter(value = ["openBrowser"])
 fun View.openBrowser(url: String) {
     if (url.isEmpty()) return
-    setOnClickListener(Navigation.createNavigateOnClickListener(MainNavDirections.openBrowser(url)))
+    setOnClickListener {
+        context.openURL(url)
+    }
+}
+
+private fun Context.openURL(url: String) {
+    val link = url.toUri()
+    val referrer = "android-app://${packageName}".toUri()
+    Intent(Intent.ACTION_VIEW, link).apply {
+        putExtra(Intent.EXTRA_REFERRER, referrer)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }.run {
+        try {
+            startActivity(this)
+        } catch (e: ActivityNotFoundException) {
+            // Very unlikely, but better to guard against this
+            Timber.e(e, "Cannot open the browser")
+            Toast.makeText(this@openURL, R.string.browser_error_launch, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 /**
@@ -131,7 +154,12 @@ fun View.openBrowser(url: String) {
 fun RecyclerView.dividers(enable: Boolean, topDivider: Boolean = true) {
     if (enable) {
         // Requires ContextThemeWrapper because in Dialogs android.R.attr.dividerHorizontal is null
-        addItemDecoration(DividerDecoration(ContextThemeWrapper(context, R.style.AppTheme), topDivider))
+        addItemDecoration(
+            DividerDecoration(
+                ContextThemeWrapper(context, R.style.AppTheme),
+                topDivider
+            )
+        )
     }
 }
 
