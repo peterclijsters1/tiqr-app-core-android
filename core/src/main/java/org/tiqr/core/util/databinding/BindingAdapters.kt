@@ -31,6 +31,7 @@ package org.tiqr.core.util.databinding
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.text.Spanned
 import android.text.util.Linkify
@@ -81,7 +82,7 @@ fun TextView.linkifyWeb(enable: Boolean) {
         BetterLinkMovementMethod
             .linkify(Linkify.WEB_URLS, this)
             .setOnLinkClickListener { _, url ->
-                findNavController().navigate(MainNavDirections.openBrowser(url))
+                context.openURL(url)
                 true
             }
     }
@@ -102,7 +103,7 @@ fun TextView.linkifyWebWith(text: String?) {
         BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, this)
     }.run {
         setOnLinkClickListener { _, url ->
-            findNavController().navigate(MainNavDirections.openBrowser(url))
+            context.openURL(url)
             true
         }
     }
@@ -125,20 +126,23 @@ fun TextView.appName(appName: String) {
 fun View.openBrowser(url: String) {
     if (url.isEmpty()) return
     setOnClickListener {
-        val link = url.toUri()
-        val referrer = "android-app://${context.packageName}".toUri()
+        context.openURL(url)
+    }
+}
 
-        Intent(Intent.ACTION_VIEW, link).apply {
-            putExtra(Intent.EXTRA_REFERRER, referrer)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }.run {
-            try {
-                context.startActivity(this)
-            } catch (e: ActivityNotFoundException) {
-                // Very unlikely, but better to guard against this
-                Timber.e(e, "Cannot open the browser")
-                Toast.makeText(context, R.string.browser_error_launch, Toast.LENGTH_SHORT).show()
-            }
+private fun Context.openURL(url: String) {
+    val link = url.toUri()
+    val referrer = "android-app://${packageName}".toUri()
+    Intent(Intent.ACTION_VIEW, link).apply {
+        putExtra(Intent.EXTRA_REFERRER, referrer)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }.run {
+        try {
+            startActivity(this)
+        } catch (e: ActivityNotFoundException) {
+            // Very unlikely, but better to guard against this
+            Timber.e(e, "Cannot open the browser")
+            Toast.makeText(this@openURL, R.string.browser_error_launch, Toast.LENGTH_SHORT).show()
         }
     }
 }
