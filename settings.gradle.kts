@@ -1,4 +1,4 @@
-rootProject.name = "tiqr client android"
+rootProject.name = "tiqr app core android"
 
 include(":app")
 include(":data")

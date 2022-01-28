@@ -33,6 +33,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.text.Spanned
 import android.text.util.Linkify
 import android.view.LayoutInflater
@@ -130,12 +131,10 @@ fun View.openBrowser(url: String) {
     }
 }
 
-private fun Context.openURL(url: String) {
-    val link = url.toUri()
-    val referrer = "android-app://${packageName}".toUri()
-    Intent(Intent.ACTION_VIEW, link).apply {
-        putExtra(Intent.EXTRA_REFERRER, referrer)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+fun Context.openURL(url: String) {
+    Intent(Intent.ACTION_VIEW).apply {
+        addCategory(Intent.CATEGORY_BROWSABLE)
+        data = url.toUri()
     }.run {
         try {
             startActivity(this)

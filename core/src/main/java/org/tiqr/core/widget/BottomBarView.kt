@@ -38,6 +38,7 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import org.tiqr.core.MainNavDirections
 import org.tiqr.core.R
 import org.tiqr.core.util.Urls.URL_SURFNET
+import org.tiqr.core.util.databinding.openURL
 
 /**
  * Custom [BottomAppBar] to display and handle the Info and Surfnet actions.
@@ -72,7 +73,7 @@ class BottomBarView : BottomAppBar {
 
         inflateMenu(R.menu.menu_bottombar)
         menu.findItem(R.id.surfnet)?.actionView?.setOnClickListener {
-            findNavController().navigate(MainNavDirections.openBrowser(URL_SURFNET))
+            context.openURL(URL_SURFNET)
         }
     }
 

@@ -32,6 +32,7 @@ package org.tiqr.core
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.annotation.LayoutRes
@@ -191,50 +192,14 @@ open class MainActivity : BaseActivity<ActivityMainBinding>(),
     }
 
     /**
-     * Toggle the bottom bar visibility with slide animation.
+     * Toggle the bottom bar visibility.
      */
     private fun toggleBottomBar(visible: Boolean, infoVisible: Boolean = true) {
-        TransitionManager.endTransitions(binding.container)
         binding.bottombar.children.forEach {
             it.clearAnimation()
         }
-
-        val transition = AutoTransition()
-        transition.addListener(object : TransitionListenerAdapter() {
-            override fun onTransitionEnd(transition: Transition) {
-                if (infoVisible.not()) binding.bottombar.infoVisible = infoVisible
-            }
-
-            override fun onTransitionStart(transition: Transition) {
-                if (infoVisible) binding.bottombar.infoVisible = infoVisible
-            }
-        })
-
-        ConstraintSet().apply {
-            clone(binding.container)
-
-            if (visible) {
-                clear(binding.bottombar.id, ConstraintSet.TOP)
-                connect(
-                    binding.bottombar.id,
-                    ConstraintSet.BOTTOM,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.BOTTOM
-                )
-            } else {
-                clear(binding.bottombar.id, ConstraintSet.BOTTOM)
-                connect(
-                    binding.bottombar.id,
-                    ConstraintSet.TOP,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.BOTTOM
-                )
-            }
-
-            applyTo(binding.container)
-        }
-
-        TransitionManager.beginDelayedTransition(binding.container, transition)
+        binding.bottombar.infoVisible = infoVisible
+        binding.bottombar.visibility = if (visible) View.VISIBLE else View.GONE
     }
 }
 

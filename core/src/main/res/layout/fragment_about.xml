@@ -5,7 +5,6 @@
     tools:context="org.tiqr.core.about.AboutFragment">
 
     <data>
-
         <import type="org.tiqr.core.util.Urls" />
     </data>
 
