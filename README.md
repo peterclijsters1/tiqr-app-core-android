@@ -29,3 +29,12 @@ To use SURF library in your project:
         .build())
 ```
 4. Override resources, styles, strings and MainActivity (if needed)
+
+# Making changes in library
+
+1. Make changes in the code
+
+2. Go to https://github.com/SURFnet/tiqr-app-core-android/actions and trigger appropriate workflow. If you are debugging client apps - trigger SNAPSHOT flow,
+   if you think that your changes are ready to be released to public - trigger RELEASE flow. If you made changes only in core - trigger CORE flow, if you made changes 
+   to data module - you have to trigger both DATA and CORE flows, as core depends on data
+   
