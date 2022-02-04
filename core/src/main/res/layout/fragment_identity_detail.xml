@@ -196,7 +196,7 @@
             android:textAppearance="@style/AppTheme.TextAppearance.Label"
             app:layout_constraintHeight_default="spread"
             app:layout_constraintWidth_default="spread"
-            app:showIf="@{hasBiometric &amp;&amp; !model.identity.biometricInUse}"
+            app:showIf="@{hasBiometric &amp;&amp; !model.identity.biometricInUse &amp;&amp; !hasBiometricSecret}"
             tools:ignore="MissingConstraints,UnusedAttribute" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -206,7 +206,7 @@
             android:checked="@{model.identity.biometricOfferUpgrade}"
             app:layout_constrainedHeight="true"
             app:layout_constraintHeight_default="spread"
-            app:showIf="@{hasBiometric &amp;&amp; !model.identity.biometricInUse}"
+            app:showIf="@{hasBiometric &amp;&amp; !model.identity.biometricInUse &amp;&amp; !hasBiometricSecret}"
             app:useMaterialThemeColors="false"
             tools:ignore="MissingConstraints" />
 
