@@ -85,7 +85,8 @@ class AuthenticationViewModel @AssistedInject constructor(
     /**
      * Perform OTP generation
      */
-    fun generateOTP(password: String, type: SecretType = SecretType.PIN) {
+    fun generateOTP(password: String) {
+        val type = if (password == SecretType.BIOMETRIC.key) SecretType.BIOMETRIC else SecretType.PIN
         _otpGenerate.value = SecretCredential(password = password, type = type)
     }
 
