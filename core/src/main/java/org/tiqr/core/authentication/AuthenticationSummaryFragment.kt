@@ -33,7 +33,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,6 +41,7 @@ import org.tiqr.core.base.BaseFragment
 import org.tiqr.core.databinding.FragmentAuthenticationSummaryBinding
 import org.tiqr.core.util.extensions.biometricUsable
 import org.tiqr.data.viewmodel.AuthenticationViewModel
+import kotlin.system.exitProcess
 
 /**
  * Fragment to summarize the authentication
@@ -60,7 +60,8 @@ class AuthenticationSummaryFragment : BaseFragment<FragmentAuthenticationSummary
         binding.viewModel = viewModel
 
         binding.buttonOk.setOnClickListener {
-            findNavController().popBackStack()
+            requireActivity().finishAffinity()
+            exitProcess(0)
         }
 
         showBiometricUpgrade(args.pin)
