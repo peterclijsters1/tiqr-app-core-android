@@ -47,6 +47,11 @@ android {
             "TIQR_AUTH_SCHEME",
             "\"${project.property("schemeAuth") as String}://\""
         )
+        buildConfigField(
+            "boolean",
+            "TOKEN_EXCHANGE_ENABLED",
+            "${project.property("tokenExchangeEnabled")}"
+        )
     }
 
     buildTypes {

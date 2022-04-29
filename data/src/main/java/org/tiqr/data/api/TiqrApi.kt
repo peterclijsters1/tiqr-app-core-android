@@ -29,6 +29,7 @@
 
 package org.tiqr.data.api
 
+import org.tiqr.data.BuildConfig
 import org.tiqr.data.api.response.ApiResponse
 import org.tiqr.data.model.AuthenticationResponse
 import org.tiqr.data.model.EnrollmentRequest
@@ -44,7 +45,8 @@ interface TiqrApi {
         private const val FIELD_SECRET_KEY = "secret"
         private const val FIELD_LANGUAGE_KEY = "language"
         private const val FIELD_NOTIFICATION_TYPE_KEY = "notificationType"
-        private const val FIELD_NOTIFICATION_TYPE_VALUE = "GCM"
+        private const val FIELD_NOTIFICATION_TYPE_VALUE_GCM = "GCM"
+        private const val FIELD_NOTIFICATION_TYPE_VALUE_FCM_DIRECT = "FCM_DIRECT"
         private const val FIELD_NOTIFICATION_ADDRESS_KEY = "notificationAddress"
         private const val FIELD_OPERATION_KEY = "operation"
         private const val FIELD_OPERATION_VALUE_REGISTER = "register"
@@ -57,30 +59,38 @@ interface TiqrApi {
 
     @GET
     suspend fun requestEnroll(
-            @Url url: String
+        @Url url: String
     ): Response<EnrollmentRequest>
 
     @POST
     @FormUrlEncoded
     suspend fun enroll(
-            @Url url: String,
-            @Field(FIELD_SECRET_KEY) secret: String,
-            @Field(FIELD_LANGUAGE_KEY) language: String,
-            @Field(FIELD_NOTIFICATION_ADDRESS_KEY) notificationAddress: String? = null,
-            @Field(FIELD_NOTIFICATION_TYPE_KEY) notificationType: String? = if (notificationAddress == null) null else FIELD_NOTIFICATION_TYPE_VALUE,
-            @Field(FIELD_OPERATION_KEY) operation: String = FIELD_OPERATION_VALUE_REGISTER
+        @Url url: String,
+        @Field(FIELD_SECRET_KEY) secret: String,
+        @Field(FIELD_LANGUAGE_KEY) language: String,
+        @Field(FIELD_NOTIFICATION_ADDRESS_KEY) notificationAddress: String? = null,
+        @Field(FIELD_NOTIFICATION_TYPE_KEY) notificationType: String? = when {
+            notificationAddress == null -> null
+            BuildConfig.TOKEN_EXCHANGE_ENABLED -> FIELD_NOTIFICATION_TYPE_VALUE_GCM
+            else -> FIELD_NOTIFICATION_TYPE_VALUE_FCM_DIRECT
+        },
+        @Field(FIELD_OPERATION_KEY) operation: String = FIELD_OPERATION_VALUE_REGISTER
     ): ApiResponse<EnrollmentResponse>
 
     @POST
     @FormUrlEncoded
     suspend fun authenticate(
-            @Url url: String,
-            @Field(FIELD_SESSION_KEY) sessionKey: String,
-            @Field(FIELD_USER_ID) userId: String?,
-            @Field(FIELD_RESPONSE) response: String,
-            @Field(FIELD_LANGUAGE_KEY) language: String,
-            @Field(FIELD_NOTIFICATION_ADDRESS_KEY) notificationAddress: String?,
-            @Field(FIELD_NOTIFICATION_TYPE_KEY) notificationType: String? = if (notificationAddress == null) null else FIELD_NOTIFICATION_TYPE_VALUE,
-            @Field(FIELD_OPERATION_KEY) operation: String = FIELD_OPERATION_VALUE_LOGIN
+        @Url url: String,
+        @Field(FIELD_SESSION_KEY) sessionKey: String,
+        @Field(FIELD_USER_ID) userId: String?,
+        @Field(FIELD_RESPONSE) response: String,
+        @Field(FIELD_LANGUAGE_KEY) language: String,
+        @Field(FIELD_NOTIFICATION_ADDRESS_KEY) notificationAddress: String?,
+        @Field(FIELD_NOTIFICATION_TYPE_KEY) notificationType: String? = when {
+            notificationAddress == null -> null
+            BuildConfig.TOKEN_EXCHANGE_ENABLED -> FIELD_NOTIFICATION_TYPE_VALUE_GCM
+            else -> FIELD_NOTIFICATION_TYPE_VALUE_FCM_DIRECT
+        },
+        @Field(FIELD_OPERATION_KEY) operation: String = FIELD_OPERATION_VALUE_LOGIN
     ): ApiResponse<AuthenticationResponse>
 }
