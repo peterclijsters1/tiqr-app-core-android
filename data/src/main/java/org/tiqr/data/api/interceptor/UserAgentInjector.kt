@@ -37,7 +37,7 @@ import okhttp3.Response
 
 /**
  * OkHttp interceptor to add a custom UserAgent with following example format:
- * tiqr/4.0 (Pixel; 4 XL; SDK 29; Android 10) okhttp/4.2.2
+ * eduid/3.0.0 (eduid 3.0.0/12; Android 9.1.2/28; INE-LX1 Build/HUAWEIINE-LX1) okhttp/4.2.2
  */
 internal class UserAgentInjector(private val context: Context) : Interceptor {
     companion object {
@@ -56,16 +56,27 @@ internal class UserAgentInjector(private val context: Context) : Interceptor {
         with(context.packageManager) {
             val appName = getApplicationLabel(context.applicationInfo) as String?
                     ?: context.getString(context.applicationInfo.labelRes)
-            val appVersion = try {
-                getPackageInfo(context.packageName, 0).versionName
+            val packageInfo = try {
+                getPackageInfo(context.packageName, 0)
             } catch (e: PackageManager.NameNotFoundException) {
                 null
             }
 
-            appData = if (appVersion != null) "$appName/$appVersion" else appName
+            appData = if (packageInfo != null) {
+                val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    packageInfo.longVersionCode
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageInfo.versionCode
+                }
+                "$appName/${packageInfo.versionName} ($appName ${packageInfo.versionName}/$versionCode;"
+            } else {
+                // Should never happen
+                "$appName/0.0.0 ($appName 0.0.0/UNKNOWN;"
+            }
         }
 
-        androidData = "(${Build.MANUFACTURER}; ${Build.MODEL}; SDK ${Build.VERSION.SDK_INT}; Android ${Build.VERSION.RELEASE})"
+        androidData ="Android ${Build.VERSION.RELEASE}/${Build.VERSION.SDK_INT}; ${Build.MANUFACTURER} ${Build.MODEL})"
         networkData = okhttp3.internal.userAgent
     }
 
