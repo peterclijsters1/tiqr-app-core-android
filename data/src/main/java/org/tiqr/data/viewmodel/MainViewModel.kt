@@ -29,23 +29,26 @@
 
 package org.tiqr.data.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.tiqr.data.repository.AuthenticationRepository
 import org.tiqr.data.repository.EnrollmentRepository
+import org.tiqr.data.repository.TokenRepository
+import org.tiqr.data.repository.base.TokenRegistrarRepository
 import javax.inject.Inject
 
 /**
- * ViewModel for parsing raw challenges.
+ * ViewModel for the main activity, for parsing raw challenges and executing token migrations.
  */
 @HiltViewModel
-class ParseViewModel @Inject constructor(
-        private val enroll: EnrollmentRepository,
-        private val auth: AuthenticationRepository
+class MainViewModel @Inject constructor(
+    private val tokenRepository: TokenRegistrarRepository,
+    private val enroll: EnrollmentRepository,
+    private val auth: AuthenticationRepository
 ) : ViewModel() {
+
     private val rawChallengeObserver = MutableLiveData<String>()
     val challenge = rawChallengeObserver.switchMap { rawChallenge ->
         liveData {
@@ -64,5 +67,14 @@ class ParseViewModel @Inject constructor(
      */
     fun parseChallenge(rawChallenge: String) {
         rawChallengeObserver.value = rawChallenge
+    }
+
+    /**
+     * Execute token migration if needed.
+     */
+    fun executeTokenMigrationIfNeeded(getDeviceTokenFunction: suspend () -> String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            tokenRepository.executeTokenMigrationIfNeeded(getDeviceTokenFunction)
+        }
     }
 }

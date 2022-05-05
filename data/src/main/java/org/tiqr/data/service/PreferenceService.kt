@@ -48,6 +48,7 @@ class PreferenceService(private val context: Context) {
         private const val PREFS_KEY_TOKEN = "notification_token"
         private const val PREFS_KEY_SALT = "salt"
         private const val PREFS_KEY_DEVICE_KEY = "device_key"
+        private const val PREFS_KEY_NOTIFICATION_TOKEN_MIGRATION_EXECUTED = "notification_token_migration_executed"
 
         private const val PREFERENCE_CURRENT_VERSION = 2 // bump to migrate
     }
@@ -67,6 +68,14 @@ class PreferenceService(private val context: Context) {
     var deviceKey: String?
         get() = securitySharedPreferences.getString(PREFS_KEY_DEVICE_KEY, null)
         set(value) = securitySharedPreferences.edit { putString(PREFS_KEY_DEVICE_KEY, value) }
+
+    /**
+     * When switching over from TokenExchange to non-TokenExchange, we need the make sure,
+     * that the old notification token is not usable anymore.
+     */
+    var notificationTokenMigrationExecuted: Boolean
+        get() = notificationSharedPreferences.getBoolean(PREFS_KEY_NOTIFICATION_TOKEN_MIGRATION_EXECUTED, false)
+        set(value) = notificationSharedPreferences.edit { putBoolean(PREFS_KEY_NOTIFICATION_TOKEN_MIGRATION_EXECUTED, value) }
 
     private var prefsVersion: Int?
         get() {

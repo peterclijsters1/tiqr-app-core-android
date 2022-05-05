@@ -45,6 +45,24 @@ class TokenRepository(private val api: TokenApi, private val preferences: Prefer
         private const val NOT_FOUND = "NOT FOUND"
     }
 
+    override suspend fun executeTokenMigrationIfNeeded(getDeviceTokenFunction: suspend () -> String?) {
+        if (BuildConfig.TOKEN_EXCHANGE_ENABLED) {
+            // We are still using the TokenExchange, no migration.
+            return
+        }
+        if (preferences.notificationTokenMigrationExecuted) {
+            // Already migrated, no migration needed anymore.
+            return
+        }
+        // Remove the old token, get the current device token from firebase, and set it
+        preferences.notificationToken = null
+        val newToken = getDeviceTokenFunction()
+        if (newToken != null) {
+            preferences.notificationToken = newToken
+            preferences.notificationTokenMigrationExecuted = true
+        }
+    }
+
     /**
      * Register the device token (received from Firebase) and save the resulting notification token.
      */

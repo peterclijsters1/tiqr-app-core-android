@@ -55,41 +55,36 @@ internal object RepositoryModule {
     @Provides
     @Singleton
     internal fun provideAuthenticationRepository(
-            api: TiqrApi,
-            resources: Resources,
-            database: DatabaseService,
-            secret: SecretService,
-            preferences: PreferenceService
+        api: TiqrApi,
+        resources: Resources,
+        database: DatabaseService,
+        secret: SecretService,
+        preferences: PreferenceService
     ) = AuthenticationRepository(api, resources, database, secret, preferences)
 
     @Provides
     @Singleton
     internal fun provideEnrollmentRepository(
-            api: TiqrApi,
-            resources: Resources,
-            database: DatabaseService,
-            secret: SecretService,
-            preferences: PreferenceService
+        api: TiqrApi,
+        resources: Resources,
+        database: DatabaseService,
+        secret: SecretService,
+        preferences: PreferenceService
     ) = EnrollmentRepository(api, resources, database, secret, preferences)
 
     @Provides
     @Singleton
     internal fun provideIdentityRepository(
-            database: DatabaseService,
-            secret: SecretService
+        database: DatabaseService,
+        secret: SecretService
     ) = IdentityRepository(database, secret)
-}
 
-/**
- * Module which serves the token repository.
- */
-@Module
-@InstallIn(SingletonComponent::class)
-object TokenRepositoryModule {
     @Provides
     @Singleton
     internal fun provideTokenRepository(
-            api: TokenApi,
-            preferences: PreferenceService
+        api: TokenApi,
+        preferences: PreferenceService
     ): TokenRegistrarRepository = TokenRepository(api, preferences)
 }
+
+
