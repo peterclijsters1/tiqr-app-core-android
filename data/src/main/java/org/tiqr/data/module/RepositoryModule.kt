@@ -30,6 +30,7 @@
 package org.tiqr.data.module
 
 import android.content.res.Resources
+import androidx.annotation.VisibleForTesting
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,7 +79,16 @@ internal object RepositoryModule {
         database: DatabaseService,
         secret: SecretService
     ) = IdentityRepository(database, secret)
+}
 
+/**
+ * Module which serves the TokenRegistrarRepository implementation.
+ * This is served in a separate module so it can be replaced in a unit test with a dummy implementation.
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+@VisibleForTesting
+class TokenRepositoryModule {
     @Provides
     @Singleton
     internal fun provideTokenRepository(
@@ -86,5 +96,3 @@ internal object RepositoryModule {
         preferences: PreferenceService
     ): TokenRegistrarRepository = TokenRepository(api, preferences)
 }
-
-

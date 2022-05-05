@@ -30,6 +30,7 @@
 package org.tiqr.authenticator
 
 import android.content.Context
+import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -44,8 +45,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.startsWith
+import org.hamcrest.Matchers.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -86,7 +86,7 @@ class AboutTest {
         // Find version CardView and check text
         withId(R.id.app).also { versionCard ->
             onView(versionCard).check(matches(isDisplayed()))
-            withParent(versionCard).also { versionText ->
+            withId(R.id.app_version_text).also { versionText ->
                 onView(versionText).check(matches(isDisplayed()))
                 onView(versionText).check(matches(withText(startsWith(context.getString(R.string.app_name)))))
             }
@@ -95,7 +95,7 @@ class AboutTest {
         // Find provider CardView and check text
         withId(R.id.provider).also { provider ->
             onView(provider).check(matches(isDisplayed()))
-            withParent(provider).also { providerText ->
+            withId(R.id.provided_provided_by).also { providerText ->
                 onView(providerText).check(matches(isDisplayed()))
                 onView(providerText).check(matches(withText(R.string.about_label_provided_by)))
             }
