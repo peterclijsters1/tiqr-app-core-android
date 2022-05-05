@@ -38,4 +38,8 @@ class TestTokenRepository: TokenRegistrarRepository {
     override suspend fun registerDeviceToken(deviceToken: String) {
         // NO OP
     }
+
+    override suspend fun executeTokenMigrationIfNeeded(getDeviceTokenFunction: suspend () -> String?) {
+        // NO OP
+    }
 }

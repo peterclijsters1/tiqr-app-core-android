@@ -18,7 +18,7 @@ android {
         minSdk = libs.versions.android.sdk.min.get().toInt()
         targetSdk = libs.versions.android.sdk.target.get().toInt()
 
-        testInstrumentationRunner = "org.tiqr.sample.runner.HiltAndroidTestRunner"
+        testInstrumentationRunner = "org.tiqr.authenticator.runner.HiltAndroidTestRunner"
 
         manifestPlaceholders["schemeEnroll"] = project.property("schemeEnroll") as String
         manifestPlaceholders["schemeAuth"] = project.property("schemeAuth") as String
@@ -33,6 +33,15 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
+    }
+
+    packagingOptions {
+        resources.excludes.addAll(
+            arrayOf(
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1"
+            )
+        )
     }
 
     buildFeatures {
