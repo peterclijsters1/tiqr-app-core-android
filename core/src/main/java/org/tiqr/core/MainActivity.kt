@@ -36,7 +36,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.annotation.LayoutRes
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.children
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -45,12 +44,10 @@ import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.transition.AutoTransition
-import androidx.transition.Transition
-import androidx.transition.TransitionListenerAdapter
-import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.tasks.await
 import org.tiqr.core.base.BaseActivity
 import org.tiqr.core.databinding.ActivityMainBinding
 import org.tiqr.core.scan.ScanFragment
@@ -60,14 +57,14 @@ import org.tiqr.core.util.extensions.getNavController
 import org.tiqr.data.model.AuthenticationChallenge
 import org.tiqr.data.model.ChallengeParseResult
 import org.tiqr.data.model.EnrollmentChallenge
-import org.tiqr.data.viewmodel.ParseViewModel
+import org.tiqr.data.viewmodel.MainViewModel
 import timber.log.Timber
 
 @AndroidEntryPoint
 open class MainActivity : BaseActivity<ActivityMainBinding>(),
     NavController.OnDestinationChangedListener {
 
-    private val parseViewModel by viewModels<ParseViewModel>()
+    private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var navController: NavController
 
     @LayoutRes
@@ -92,7 +89,8 @@ open class MainActivity : BaseActivity<ActivityMainBinding>(),
 
             Navigation.setViewNavController(binding.bottombar, this)
         }
-        parseViewModel.challenge.observe(this) { result ->
+        mainViewModel.executeTokenMigrationIfNeeded(this::getDeviceToken)
+        mainViewModel.challenge.observe(this) { result ->
             when (result) {
                 is ChallengeParseResult.Success -> {
                     when (result.value) {
@@ -129,7 +127,7 @@ open class MainActivity : BaseActivity<ActivityMainBinding>(),
 
         if (intent != null && intent.action == Intent.ACTION_VIEW) {
             intent.dataString?.let { rawChallenge ->
-                parseViewModel.parseChallenge(rawChallenge)
+                mainViewModel.parseChallenge(rawChallenge)
                 // clear the intent since we have handled it
                 intent.data = null
             }
@@ -200,6 +198,18 @@ open class MainActivity : BaseActivity<ActivityMainBinding>(),
         }
         binding.bottombar.infoVisible = infoVisible
         binding.bottombar.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * Get the current device token from Firebase messaging
+     */
+    private suspend inline fun getDeviceToken() : String? {
+        return try {
+            FirebaseMessaging.getInstance().token.await()
+        } catch (ex: Exception) {
+            Timber.w("Unable to get last known device token from Firebase Messaging.", ex)
+            null
+        }
     }
 }
 

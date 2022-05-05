@@ -34,4 +34,5 @@ package org.tiqr.data.repository.base
  */
 interface TokenRegistrarRepository {
     suspend fun registerDeviceToken(deviceToken: String)
+    suspend fun executeTokenMigrationIfNeeded(getDeviceTokenFunction: suspend () -> String?)
 }
