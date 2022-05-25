@@ -39,6 +39,21 @@ android {
 
         buildConfigField(
             "String",
+            "ENFORCE_CHALLENGE_HOST",
+            "\"${project.property("enforceChallengeHost")}\""
+        )
+        buildConfigField(
+            "String",
+            "TIQR_ENROLL_PATH_PARAM",
+            "\"${project.property("pathParamEnroll")}\""
+        )
+        buildConfigField(
+            "String",
+            "TIQR_AUTH_PATH_PARAM",
+            "\"${project.property("pathParamAuth")}\""
+        )
+        buildConfigField(
+            "String",
             "TIQR_ENROLL_SCHEME",
             "\"${project.property("schemeEnroll") as String}://\""
         )

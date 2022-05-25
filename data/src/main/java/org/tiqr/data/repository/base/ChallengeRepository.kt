@@ -62,7 +62,7 @@ abstract class ChallengeRepository<T: Challenge> {
     /**
      * Contains a valid challenge?
      */
-    fun isValidChallenge(rawChallenge: String) = rawChallenge.startsWith(challengeScheme)
+    abstract fun isValidChallenge(rawChallenge: String): Boolean
 
     /**
      * Parse the raw challenge.

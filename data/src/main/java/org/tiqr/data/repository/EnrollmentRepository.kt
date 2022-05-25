@@ -30,6 +30,7 @@
 package org.tiqr.data.repository
 
 import android.content.res.Resources
+import android.net.Uri
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +77,36 @@ class EnrollmentRepository(
         override val preferences: PreferenceService
 ) : ChallengeRepository<EnrollmentChallenge>() {
     override val challengeScheme: String = BuildConfig.TIQR_ENROLL_SCHEME
+
+    /**
+     * Contains a valid challenge?
+     */
+    override fun isValidChallenge(rawChallenge: String): Boolean {
+        if (rawChallenge.startsWith(challengeScheme)) {
+            // Old format enrollment URL, starts with a custom scheme
+            return true
+        }
+        try {
+            val uri = Uri.parse(rawChallenge)
+            if (uri.scheme != "https" || uri.pathSegments.firstOrNull() == BuildConfig.TIQR_ENROLL_PATH_PARAM) {
+                Timber.w("Scheme is not HTTPS or path param is not for enrollment.")
+                return false
+            }
+            if (BuildConfig.ENFORCE_CHALLENGE_HOST.isNotBlank()) {
+                val host = uri.host?.lowercase()
+                if (host == null ||
+                    (host != BuildConfig.ENFORCE_CHALLENGE_HOST && host.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
+                ) {
+                    Timber.w("Host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $host.");
+                    return false
+                }
+            }
+            return true
+        } catch (ex: Exception) {
+            Timber.w(ex, "Unable to parse enrollment URL")
+            return false
+        }
+    }
 
     /**
      * Validate the [rawChallenge] and request enrollment.

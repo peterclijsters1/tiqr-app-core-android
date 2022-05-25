@@ -30,6 +30,16 @@ To use SURF library in your project:
 ```
 4. Override resources, styles, strings and MainActivity (if needed)
 
+5. Set the gradle.properties
+
+The following properties are supported (see the gradle.properties in this repository for example values):
+* `schemeEnroll`: The enrollment URL should start with this HTTP scheme
+* `schemeAuth`: The authentication URL should start with this HTTP scheme
+* `pathParamEnroll`: You can also use HTTPS URLs for enrollment. In that case, this enrollment URL should start with this path parameter 
+* `pathParamAuth`: You can also use HTTPS URLs for authentication. In that case, this authentication URL should start with this path parameter.
+* `enforceChallengeHost`: Optional parameter. When set, the app will check if the HTTP URL has this domain (or a subdomain of it) set as the host. 
+* `tokenExchangeEnabled`: If the token exchange feature is enabled. When set to false, the FCM token will not be converted, but sent directly to the server.
+
 # Making changes in library
 
 1. Make changes in the code

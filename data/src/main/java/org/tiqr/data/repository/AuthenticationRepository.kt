@@ -34,32 +34,19 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.tiqr.data.BuildConfig
 import org.tiqr.data.R
 import org.tiqr.data.algorithm.Ocra
 import org.tiqr.data.algorithm.Ocra.OcraException
 import org.tiqr.data.api.TiqrApi
 import org.tiqr.data.api.response.ApiResponse
-import org.tiqr.data.model.AuthenticationChallenge
-import org.tiqr.data.model.AuthenticationCompleteFailure
-import org.tiqr.data.model.AuthenticationCompleteRequest
-import org.tiqr.data.model.AuthenticationParseFailure
-import org.tiqr.data.model.AuthenticationResponse
+import org.tiqr.data.model.*
 import org.tiqr.data.model.AuthenticationResponse.Code.AUTH_RESULT_ACCOUNT_BLOCKED
 import org.tiqr.data.model.AuthenticationResponse.Code.AUTH_RESULT_INVALID_CHALLENGE
 import org.tiqr.data.model.AuthenticationResponse.Code.AUTH_RESULT_INVALID_REQUEST
 import org.tiqr.data.model.AuthenticationResponse.Code.AUTH_RESULT_INVALID_RESPONSE
 import org.tiqr.data.model.AuthenticationResponse.Code.AUTH_RESULT_INVALID_USER_ID
 import org.tiqr.data.model.AuthenticationResponse.Code.AUTH_RESULT_SUCCESS
-import org.tiqr.data.model.ChallengeCompleteFailure
-import org.tiqr.data.model.ChallengeCompleteOtpResult
-import org.tiqr.data.model.ChallengeCompleteRequest
-import org.tiqr.data.model.ChallengeCompleteResult
-import org.tiqr.data.model.ChallengeParseResult
-import org.tiqr.data.model.Identity
-import org.tiqr.data.model.SecretCredential
-import org.tiqr.data.model.SecretType
 import org.tiqr.data.repository.base.ChallengeRepository
 import org.tiqr.data.security.SecurityFeaturesException
 import org.tiqr.data.service.DatabaseService
@@ -85,44 +72,47 @@ class AuthenticationRepository(
     override val challengeScheme: String = BuildConfig.TIQR_AUTH_SCHEME
 
     /**
+     * Checks if the challenge is valid
+     */
+    override fun isValidChallenge(rawChallenge: String) : Boolean {
+        return AuthenticationUrlParams.parseFromUrl(rawChallenge) != null
+    }
+
+    /**
      * Validate the [rawChallenge] and request authentication.
      */
     override suspend fun parseChallenge(rawChallenge: String): ChallengeParseResult<AuthenticationChallenge, AuthenticationParseFailure> {
-        // Check challenge validity
-        val isValid = isValidChallenge(rawChallenge)
-        val url = rawChallenge.replaceFirst(challengeScheme, "http://").toHttpUrlOrNull()
-
-        if (isValid.not() || url == null || url.pathSize < 3) {
-            return AuthenticationParseFailure(
-                    reason = AuthenticationParseFailure.Reason.INVALID_CHALLENGE,
-                    title = resources.getString(R.string.error_auth_title),
-                    message = resources.getString(R.string.error_auth_invalid_qr)
+        // Parse challenge, throw error if not valid
+        val challengeUrlParams = AuthenticationUrlParams.parseFromUrl(rawChallenge)
+            ?: return AuthenticationParseFailure(
+                reason = AuthenticationParseFailure.Reason.INVALID_CHALLENGE,
+                title = resources.getString(R.string.error_auth_title),
+                message = resources.getString(R.string.error_auth_invalid_qr)
             ).run {
-                Timber.e("Invalid QR: $url")
+                Timber.e("Invalid QR: $rawChallenge")
                 ChallengeParseResult.failure(this)
             }
-        }
 
         // Check if identity provider is known
-        val identityProvider = database.getIdentityProviderByIdentifier(url.host)
+        val identityProvider = database.getIdentityProviderByIdentifier(challengeUrlParams.serverIdentifier)
                 ?: return AuthenticationParseFailure(
                         reason = AuthenticationParseFailure.Reason.INVALID_IDENTITY_PROVIDER,
                         title = resources.getString(R.string.error_auth_title),
                         message = resources.getString(R.string.error_auth_unknown_identity_provider)
                 ).run {
-                    Timber.e("Unknown identity provider: ${url.host}")
+                    Timber.e("Unknown identity provider: ${challengeUrlParams.serverIdentifier}")
                     ChallengeParseResult.failure(this)
                 }
 
         // Check if identity is known
-        val identity = if (url.username.isNotBlank()) {
-            database.getIdentity(url.username, identityProvider.identifier)
+        val identity = if (challengeUrlParams.username.isNotBlank()) {
+            database.getIdentity(challengeUrlParams.username, identityProvider.identifier)
                     ?: return AuthenticationParseFailure(
                             reason = AuthenticationParseFailure.Reason.INVALID_IDENTITY,
                             title = resources.getString(R.string.error_auth_title),
                             message = resources.getString(R.string.error_auth_unknown_identity)
                     ).run {
-                        Timber.e("Unknown identity: ${url.username}")
+                        Timber.e("Unknown identity: ${challengeUrlParams.username}")
                         ChallengeParseResult.failure(this)
                     }
         } else {
@@ -139,22 +129,22 @@ class AuthenticationRepository(
 
         // Check if there are multiple identities
         val identities = database.getIdentities(identityProvider.identifier)
-        val multipleIdentities = url.username.isBlank() && identities.size > 1
+        val multipleIdentities = challengeUrlParams.username.isBlank() && identities.size > 1
         if (multipleIdentities) {
             Timber.d("Found ${identities.size} identities for ${identityProvider.identifier}," +
                     " and the challenge did not contain a specific username.")
         }
 
         return AuthenticationChallenge(
-                protocolVersion = url.pathSegments.getOrNull(3)?.toInt() ?: 0 ,
+                protocolVersion = challengeUrlParams.protocolVersion,
                 identityProvider = identityProvider,
                 identity = if (multipleIdentities) null else identity,
                 identities = if (multipleIdentities) identities else emptyList(),
-                returnUrl = url.query?.toHttpUrlOrNull()?.toString(),
-                sessionKey = url.pathSegments[0],
-                challenge = url.pathSegments[1],
-                isStepUpChallenge = url.username.isNotEmpty(), // what does this mean? to be used to check if raw-challenge already has an identity
-                serviceProviderDisplayName = url.pathSegments.getOrElse(2) { resources.getString(R.string.error_auth_empty_service_provider) },
+                returnUrl = challengeUrlParams.returnUrl,
+                sessionKey = challengeUrlParams.sessionKey,
+                challenge = challengeUrlParams.challenge,
+                isStepUpChallenge = challengeUrlParams.username.isNotEmpty(), // what does this mean? to be used to check if raw-challenge already has an identity
+                serviceProviderDisplayName = identityProvider.displayName,
                 serviceProviderIdentifier = ""
         ).run {
             ChallengeParseResult.success(this)
