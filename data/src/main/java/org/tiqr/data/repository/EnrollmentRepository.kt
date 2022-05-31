@@ -35,6 +35,7 @@ import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonEncodingException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.tiqr.data.BuildConfig
 import org.tiqr.data.R
@@ -92,6 +93,11 @@ class EnrollmentRepository(
                 Timber.w("Scheme is not HTTPS or path param is not for enrollment.")
                 return false
             }
+            val metadataQuery = uri.getQueryParameter("metadata")
+            if (metadataQuery.isNullOrBlank()) {
+                Timber.w("Metadata parameter not found on the enrollment URL!")
+                return false
+            }
             if (BuildConfig.ENFORCE_CHALLENGE_HOST.isNotBlank()) {
                 val host = uri.host?.lowercase()
                 if (host == null ||
@@ -114,12 +120,18 @@ class EnrollmentRepository(
     override suspend fun parseChallenge(rawChallenge: String): ChallengeParseResult<EnrollmentChallenge, EnrollmentParseFailure> {
         // Check challenge validity
         val isValid = isValidChallenge(rawChallenge)
-        val url = rawChallenge.substring(challengeScheme.length).toHttpUrlOrNull()
+        val url : HttpUrl? = if (rawChallenge.startsWith(challengeScheme)) {
+            // Old format URL, with custom scheme
+            rawChallenge.substring(challengeScheme.length).toHttpUrlOrNull()
+        } else {
+            // New format URL, with https scheme
+            Uri.parse(rawChallenge).getQueryParameter("metadata")?.toHttpUrlOrNull()
+        }
         if (isValid.not() || url == null || url.isHttpOrHttps().not()) {
             return EnrollmentParseFailure(
-                    reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
-                    title = resources.getString(R.string.error_enroll_title),
-                    message = resources.getString(R.string.error_enroll_invalid_qr)
+                reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
+                title = resources.getString(R.string.error_enroll_title),
+                message = resources.getString(R.string.error_enroll_invalid_qr)
             ).run {
                 Timber.e("Invalid QR: $url")
                 ChallengeParseResult.failure(this)
