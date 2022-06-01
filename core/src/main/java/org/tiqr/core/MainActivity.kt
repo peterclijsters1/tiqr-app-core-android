@@ -112,7 +112,14 @@ open class MainActivity : BaseActivity<ActivityMainBinding>(),
                         .setPositiveButton(R.string.button_ok) { dialog, _ -> dialog.dismiss() }
                         .show()
                 }
-                else -> Timber.w("Could not parse the raw challenge")
+                else -> {
+                    Timber.w("Could not parse the raw challenge")
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.error_challenge_title_opened_from_invalid_url)
+                        .setMessage(R.string.error_challenge_opened_from_invalid_url)
+                        .setPositiveButton(R.string.button_ok) { dialog, _ -> dialog.dismiss() }
+                        .show()
+                }
             }
         }
     }

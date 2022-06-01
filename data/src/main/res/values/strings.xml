@@ -61,4 +61,6 @@
     <string name="error_auth_title_account">Invalid account</string>
     <string name="error_auth_account_invalid">You tried to log in with an invalid or unknown account. Please (re-)activate your account first.</string>
 
+    <string name="error_challenge_title_opened_from_invalid_url">The app was opened from an invalid URL</string>
+    <string name="error_challenge_opened_from_invalid_url">The link which was used to open the app does not have a valid format. No action will be taken.</string>
 </resources>

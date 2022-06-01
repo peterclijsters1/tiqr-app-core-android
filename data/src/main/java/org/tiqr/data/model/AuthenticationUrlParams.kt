@@ -79,11 +79,11 @@ class AuthenticationUrlParams private constructor(
                 Timber.w("Challenge URL not according to format. Expected path parameter: '${BuildConfig.TIQR_AUTH_PATH_PARAM}', got: '$firstPathParam'.")
                 return null
             }
-            val username = uri.getQueryParameter("u") ?: return null
+            val username = uri.getQueryParameter("u") ?: return missingParameter("u")
             val protocolVersion = uri.getQueryParameter("v")?.toIntOrNull() ?: 0
-            val challenge = uri.getQueryParameter("c") ?: return null
-            val sessionKey = uri.getQueryParameter("s") ?: return null
-            val serverIdentifier = uri.getQueryParameter("i") ?: return null
+            val challenge = uri.getQueryParameter("c") ?: return missingParameter("c")
+            val sessionKey = uri.getQueryParameter("s") ?: return missingParameter("s")
+            val serverIdentifier = uri.getQueryParameter("i") ?: return missingParameter("i")
             val returnUrl: String? = null
 
             return AuthenticationUrlParams(
@@ -94,6 +94,11 @@ class AuthenticationUrlParams private constructor(
                 returnUrl = returnUrl,
                 serverIdentifier = serverIdentifier
             )
+        }
+
+        private fun missingParameter(paramName: String): AuthenticationUrlParams? {
+            Timber.w("Expected the following parameter: '$paramName'!")
+            return null
         }
     }
 }
