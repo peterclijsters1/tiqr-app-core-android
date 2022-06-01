@@ -99,11 +99,19 @@ class EnrollmentRepository(
                 return false
             }
             if (BuildConfig.ENFORCE_CHALLENGE_HOST.isNotBlank()) {
-                val host = uri.host?.lowercase()
-                if (host == null ||
-                    (host != BuildConfig.ENFORCE_CHALLENGE_HOST && host.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
+                val uriHost = uri.host?.lowercase()
+                if (uriHost == null ||
+                    (uriHost != BuildConfig.ENFORCE_CHALLENGE_HOST && uriHost.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
                 ) {
-                    Timber.w("Host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $host.");
+                    Timber.w("Original URI host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $uriHost.");
+                    return false
+                }
+                // Also enforce for metadata host
+                val metadataHost = Uri.parse(metadataQuery)?.host
+                if (metadataHost == null ||
+                    (metadataHost != BuildConfig.ENFORCE_CHALLENGE_HOST && metadataHost.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
+                ) {
+                    Timber.w("Metadata host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $metadataHost.");
                     return false
                 }
             }
