@@ -77,7 +77,7 @@ class EnrollmentRepository(
         }
         try {
             val uri = Uri.parse(rawChallenge)
-            if (uri.scheme != "https" || uri.pathSegments.firstOrNull() == TiqrConfig.enrollPathParam) {
+            if (uri.scheme != "https" || uri.pathSegments.firstOrNull() != TiqrConfig.enrollPathParam) {
                 Timber.w("Scheme is not HTTPS or path param is not for enrollment.")
                 return false
             }
