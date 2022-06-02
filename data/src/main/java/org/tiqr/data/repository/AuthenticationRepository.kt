@@ -69,7 +69,7 @@ class AuthenticationRepository(
         override val secretService: SecretService,
         override val preferences: PreferenceService
 ) : ChallengeRepository<AuthenticationChallenge>() {
-    override val challengeScheme: String = BuildConfig.TIQR_AUTH_SCHEME
+    override val challengeScheme: String = "${TiqrConfig.authScheme}://"
 
     /**
      * Checks if the challenge is valid
@@ -258,8 +258,8 @@ class AuthenticationRepository(
             ChallengeCompleteResult.failure(this)
         }
 
-        if (!BuildConfig.PROTOCOL_COMPATIBILITY_MODE) {
-            if (protocolVersion <= BuildConfig.PROTOCOL_VERSION) {
+        if (!TiqrConfig.protocolCompatibilityMode) {
+            if (protocolVersion <= TiqrConfig.protocolVersion) {
                 return AuthenticationCompleteFailure(
                         reason = AuthenticationCompleteFailure.Reason.INVALID_RESPONSE,
                         title = resources.getString(R.string.error_auth_title),

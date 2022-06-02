@@ -29,11 +29,11 @@
 
 package org.tiqr.data.api
 
-import org.tiqr.data.BuildConfig
 import org.tiqr.data.api.response.ApiResponse
 import org.tiqr.data.model.AuthenticationResponse
 import org.tiqr.data.model.EnrollmentRequest
 import org.tiqr.data.model.EnrollmentResponse
+import org.tiqr.data.model.TiqrConfig
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -71,7 +71,7 @@ interface TiqrApi {
         @Field(FIELD_NOTIFICATION_ADDRESS_KEY) notificationAddress: String? = null,
         @Field(FIELD_NOTIFICATION_TYPE_KEY) notificationType: String? = when {
             notificationAddress == null -> null
-            BuildConfig.TOKEN_EXCHANGE_ENABLED -> FIELD_NOTIFICATION_TYPE_VALUE_GCM
+            TiqrConfig.tokenExchangeEnabled -> FIELD_NOTIFICATION_TYPE_VALUE_GCM
             else -> FIELD_NOTIFICATION_TYPE_VALUE_FCM_DIRECT
         },
         @Field(FIELD_OPERATION_KEY) operation: String = FIELD_OPERATION_VALUE_REGISTER
@@ -88,7 +88,7 @@ interface TiqrApi {
         @Field(FIELD_NOTIFICATION_ADDRESS_KEY) notificationAddress: String?,
         @Field(FIELD_NOTIFICATION_TYPE_KEY) notificationType: String? = when {
             notificationAddress == null -> null
-            BuildConfig.TOKEN_EXCHANGE_ENABLED -> FIELD_NOTIFICATION_TYPE_VALUE_GCM
+            TiqrConfig.tokenExchangeEnabled -> FIELD_NOTIFICATION_TYPE_VALUE_GCM
             else -> FIELD_NOTIFICATION_TYPE_VALUE_FCM_DIRECT
         },
         @Field(FIELD_OPERATION_KEY) operation: String = FIELD_OPERATION_VALUE_LOGIN

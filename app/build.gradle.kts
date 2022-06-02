@@ -20,8 +20,17 @@ android {
 
         testInstrumentationRunner = "org.tiqr.authenticator.runner.HiltAndroidTestRunner"
 
-        manifestPlaceholders["schemeEnroll"] = project.property("schemeEnroll") as String
-        manifestPlaceholders["schemeAuth"] = project.property("schemeAuth") as String
+        // Tiqr config
+        manifestPlaceholders["tiqr_config_token_exchange_base_url"] = "https://tx.tiqr.org/"
+        manifestPlaceholders["tiqr_config_base_url"] = "https://demo.tiqr.org"
+        manifestPlaceholders["tiqr_config_protocol_version"] = "2"
+        manifestPlaceholders["tiqr_config_protocol_compatibility_mode"] =  "true"
+        manifestPlaceholders["tiqr_config_enforce_challenge_host"] = "tiqr.nl"
+        manifestPlaceholders["tiqr_config_enroll_path_param"] = "tiqrenroll"
+        manifestPlaceholders["tiqr_config_auth_path_param"] = "tiqrauth"
+        manifestPlaceholders["tiqr_config_enroll_scheme"] = "tiqrenroll"
+        manifestPlaceholders["tiqr_config_auth_scheme"] = "tiqrauth"
+        manifestPlaceholders["tiqr_config_token_exchange_enabled"] = "false"
 
         // only package supported languages
         resourceConfigurations += listOf("en", "da", "de", "es", "fr", "fy", "hr", "ja", "lt", "nl", "no", "ro", "sk", "sl", "sr", "tr" )

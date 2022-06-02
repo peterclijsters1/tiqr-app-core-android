@@ -29,24 +29,26 @@
 
 package org.tiqr.data.repository
 
+import dagger.Lazy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.tiqr.data.api.TokenApi
+import org.tiqr.data.model.TiqrConfig
 import org.tiqr.data.repository.base.TokenRegistrarRepository
 import org.tiqr.data.service.PreferenceService
-import org.tiqr.data.BuildConfig
 import timber.log.Timber
 
 /**
  * Repository to handle token exchange.
  */
-class TokenRepository(private val api: TokenApi, private val preferences: PreferenceService): TokenRegistrarRepository {
+class TokenRepository(private val api: Lazy<TokenApi>, private val preferences: PreferenceService) :
+    TokenRegistrarRepository {
     companion object {
         private const val NOT_FOUND = "NOT FOUND"
     }
 
     override suspend fun executeTokenMigrationIfNeeded(getDeviceTokenFunction: suspend () -> String?) {
-        if (BuildConfig.TOKEN_EXCHANGE_ENABLED) {
+        if (TiqrConfig.tokenExchangeEnabled) {
             // We are still using the TokenExchange, no migration.
             return
         }
@@ -67,9 +69,9 @@ class TokenRepository(private val api: TokenApi, private val preferences: Prefer
      * Register the device token (received from Firebase) and save the resulting notification token.
      */
     override suspend fun registerDeviceToken(deviceToken: String) {
-        if (BuildConfig.TOKEN_EXCHANGE_ENABLED) {
+        if (TiqrConfig.tokenExchangeEnabled) {
             try {
-                val newToken = api.registerDeviceToken(
+                val newToken = api.get().registerDeviceToken(
                     deviceToken = deviceToken,
                     notificationToken = preferences.notificationToken
                 )

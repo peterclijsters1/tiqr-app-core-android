@@ -54,6 +54,7 @@ import org.tiqr.data.di.BaseScope
 import org.tiqr.data.di.TokenScope
 import org.tiqr.data.model.AuthenticationResponse
 import org.tiqr.data.model.EnrollmentResponse
+import org.tiqr.data.model.TiqrConfig
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -155,7 +156,7 @@ internal object NetworkModule {
     @BaseScope
     internal fun provideBaseRetrofit(): Retrofit {
         return Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_URL) //Dummy base URL, since each api call uses its own url
+                .baseUrl(TiqrConfig.baseUrl) //Dummy base URL, since each api call uses its own url
                 .build()
     }
 
@@ -171,8 +172,8 @@ internal object NetworkModule {
                 .callFactory { client.get().newCall(it) }
                 .addCallAdapterFactory(ApiResponseAdapterFactory.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(if (BuildConfig.PROTOCOL_COMPATIBILITY_MODE) MoshiConverterFactory.create(moshi).asLenient() else MoshiConverterFactory.create(moshi))
-                .baseUrl(BuildConfig.BASE_URL) //Dummy base URL, since each api call uses its own url
+                .addConverterFactory(if (TiqrConfig.protocolCompatibilityMode) MoshiConverterFactory.create(moshi).asLenient() else MoshiConverterFactory.create(moshi))
+                .baseUrl(TiqrConfig.baseUrl) //Dummy base URL, since each api call uses its own url
                 .build()
     }
 
@@ -183,10 +184,12 @@ internal object NetworkModule {
             @BaseScope retrofit: Retrofit,
             @TokenScope client: Lazy<OkHttpClient>
     ): Retrofit {
+        val url = TiqrConfig.tokenExchangeBaseUrl
+            ?: throw RuntimeException("Token exchange base URL parameter should be set if the token exchange is enabled!")
         return retrofit.newBuilder()
                 .callFactory { client.get().newCall(it) }
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .baseUrl(BuildConfig.TOKEN_EXCHANGE_BASE_URL)
+                .baseUrl(url)
                 .build()
     }
 

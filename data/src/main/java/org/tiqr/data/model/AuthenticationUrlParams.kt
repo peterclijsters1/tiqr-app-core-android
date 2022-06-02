@@ -22,7 +22,7 @@ class AuthenticationUrlParams private constructor(
             return if (url.startsWith("http")) {
                 // New format URL
                 parseNewFormatUrl(url)
-            } else if (url.startsWith(BuildConfig.TIQR_AUTH_SCHEME)) {
+            } else if (url.startsWith("${TiqrConfig.authScheme}://")) {
                 // Old format URL
                 parseOldFormatUrl(url)
             } else {
@@ -33,7 +33,7 @@ class AuthenticationUrlParams private constructor(
 
         private fun parseOldFormatUrl(url: String): AuthenticationUrlParams? {
             val httpUrl =
-                url.replaceFirst(BuildConfig.TIQR_AUTH_SCHEME, "http://").toHttpUrlOrNull()
+                url.replaceFirst("${TiqrConfig.authScheme}://", "http://").toHttpUrlOrNull()
             if (httpUrl == null) {
                 Timber.w("Could not parse old format URL.")
                 return null
@@ -61,12 +61,12 @@ class AuthenticationUrlParams private constructor(
                 Timber.w(ex, "Unable to parse URL: '$url'")
                 return null
             }
-            if (BuildConfig.ENFORCE_CHALLENGE_HOST.isNotBlank()) {
+            if (!TiqrConfig.enforceChallengeHost.isNullOrBlank()) {
                 val host = uri.host?.lowercase()
                 if (host == null ||
-                    (host != BuildConfig.ENFORCE_CHALLENGE_HOST && host.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
+                    (host != TiqrConfig.enforceChallengeHost && host.endsWith("." + TiqrConfig.enforceChallengeHost))
                 ) {
-                    Timber.w("Host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $host.");
+                    Timber.w("Host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHost}, but it was actually: $host.");
                     return null
                 }
             }
@@ -75,8 +75,8 @@ class AuthenticationUrlParams private constructor(
                 Timber.w("Expected a path parameter, got nothing, this is not a valid challenge URL.")
                 return null
             }
-            if (firstPathParam.lowercase() != BuildConfig.TIQR_AUTH_PATH_PARAM.lowercase()) {
-                Timber.w("Challenge URL not according to format. Expected path parameter: '${BuildConfig.TIQR_AUTH_PATH_PARAM}', got: '$firstPathParam'.")
+            if (firstPathParam.lowercase() != TiqrConfig.authPathParam?.lowercase()) {
+                Timber.w("Challenge URL not according to format. Expected path parameter: '${TiqrConfig.authPathParam}', got: '$firstPathParam'.")
                 return null
             }
             val username = uri.getQueryParameter("u") ?: return missingParameter("u")
