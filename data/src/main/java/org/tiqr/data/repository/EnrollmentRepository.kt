@@ -41,19 +41,7 @@ import org.tiqr.data.BuildConfig
 import org.tiqr.data.R
 import org.tiqr.data.api.TiqrApi
 import org.tiqr.data.api.response.ApiResponse
-import org.tiqr.data.model.Challenge
-import org.tiqr.data.model.ChallengeCompleteFailure
-import org.tiqr.data.model.ChallengeCompleteRequest
-import org.tiqr.data.model.ChallengeCompleteResult
-import org.tiqr.data.model.ChallengeParseResult
-import org.tiqr.data.model.EnrollmentChallenge
-import org.tiqr.data.model.EnrollmentCompleteFailure
-import org.tiqr.data.model.EnrollmentParseFailure
-import org.tiqr.data.model.EnrollmentResponse
-import org.tiqr.data.model.Identity
-import org.tiqr.data.model.IdentityProvider
-import org.tiqr.data.model.Secret
-import org.tiqr.data.model.SecretType
+import org.tiqr.data.model.*
 import org.tiqr.data.repository.base.ChallengeRepository
 import org.tiqr.data.service.DatabaseService
 import org.tiqr.data.service.PreferenceService
@@ -77,7 +65,7 @@ class EnrollmentRepository(
         override val secretService: SecretService,
         override val preferences: PreferenceService
 ) : ChallengeRepository<EnrollmentChallenge>() {
-    override val challengeScheme: String = BuildConfig.TIQR_ENROLL_SCHEME
+    override val challengeScheme: String = "${TiqrConfig.enrollScheme}://"
 
     /**
      * Contains a valid challenge?
@@ -89,7 +77,7 @@ class EnrollmentRepository(
         }
         try {
             val uri = Uri.parse(rawChallenge)
-            if (uri.scheme != "https" || uri.pathSegments.firstOrNull() == BuildConfig.TIQR_ENROLL_PATH_PARAM) {
+            if (uri.scheme != "https" || uri.pathSegments.firstOrNull() == TiqrConfig.enrollPathParam) {
                 Timber.w("Scheme is not HTTPS or path param is not for enrollment.")
                 return false
             }
@@ -98,20 +86,20 @@ class EnrollmentRepository(
                 Timber.w("Metadata parameter not found on the enrollment URL!")
                 return false
             }
-            if (BuildConfig.ENFORCE_CHALLENGE_HOST.isNotBlank()) {
+            if (!TiqrConfig.enforceChallengeHost.isNullOrBlank()) {
                 val uriHost = uri.host?.lowercase()
                 if (uriHost == null ||
-                    (uriHost != BuildConfig.ENFORCE_CHALLENGE_HOST && uriHost.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
+                    (uriHost != TiqrConfig.enforceChallengeHost && uriHost.endsWith("." + TiqrConfig.enforceChallengeHost))
                 ) {
-                    Timber.w("Original URI host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $uriHost.");
+                    Timber.w("Original URI host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHost}, but it was actually: $uriHost.");
                     return false
                 }
                 // Also enforce for metadata host
                 val metadataHost = Uri.parse(metadataQuery)?.host
                 if (metadataHost == null ||
-                    (metadataHost != BuildConfig.ENFORCE_CHALLENGE_HOST && metadataHost.endsWith("." + BuildConfig.ENFORCE_CHALLENGE_HOST))
+                    (metadataHost != TiqrConfig.enforceChallengeHost && metadataHost.endsWith("." + TiqrConfig.enforceChallengeHost))
                 ) {
-                    Timber.w("Metadata host was expected to be a subdomain of: ${BuildConfig.ENFORCE_CHALLENGE_HOST}, but it was actually: $metadataHost.");
+                    Timber.w("Metadata host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHost}, but it was actually: $metadataHost.");
                     return false
                 }
             }
@@ -310,8 +298,8 @@ class EnrollmentRepository(
             ChallengeCompleteResult.failure(this)
         }
 
-        if (!BuildConfig.PROTOCOL_COMPATIBILITY_MODE) {
-            if (protocolVersion <= BuildConfig.PROTOCOL_VERSION) {
+        if (!TiqrConfig.protocolCompatibilityMode) {
+            if (protocolVersion <= TiqrConfig.protocolVersion) {
                 return EnrollmentCompleteFailure(
                         reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
                         title = resources.getString(R.string.error_enroll_title),

@@ -30,43 +30,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        buildConfigField("String", "TOKEN_EXCHANGE_BASE_URL", "\"https://tx.tiqr.org/\"")
-
-        buildConfigField("String", "BASE_URL", "\"https://demo.tiqr.org\"")
-        buildConfigField("int", "PROTOCOL_VERSION", "2")
-        buildConfigField("boolean", "PROTOCOL_COMPATIBILITY_MODE", "true")
-
-        buildConfigField(
-            "String",
-            "ENFORCE_CHALLENGE_HOST",
-            "\"${project.property("enforceChallengeHost")}\""
-        )
-        buildConfigField(
-            "String",
-            "TIQR_ENROLL_PATH_PARAM",
-            "\"${project.property("pathParamEnroll")}\""
-        )
-        buildConfigField(
-            "String",
-            "TIQR_AUTH_PATH_PARAM",
-            "\"${project.property("pathParamAuth")}\""
-        )
-        buildConfigField(
-            "String",
-            "TIQR_ENROLL_SCHEME",
-            "\"${project.property("schemeEnroll") as String}://\""
-        )
-        buildConfigField(
-            "String",
-            "TIQR_AUTH_SCHEME",
-            "\"${project.property("schemeAuth") as String}://\""
-        )
-        buildConfigField(
-            "boolean",
-            "TOKEN_EXCHANGE_ENABLED",
-            "${project.property("tokenExchangeEnabled")}"
-        )
     }
 
     buildTypes {

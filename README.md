@@ -30,15 +30,59 @@ To use SURF library in your project:
 ```
 4. Override resources, styles, strings and MainActivity (if needed)
 
-5. Set the gradle.properties
+5. Add the following parameters to your AndroidManifest.xml:
 
-The following properties are supported (see the gradle.properties in this repository for example values):
-* `schemeEnroll`: The enrollment URL should start with this HTTP scheme
-* `schemeAuth`: The authentication URL should start with this HTTP scheme
-* `pathParamEnroll`: You can also use HTTPS URLs for enrollment. In that case, this enrollment URL should start with this path parameter 
-* `pathParamAuth`: You can also use HTTPS URLs for authentication. In that case, this authentication URL should start with this path parameter.
-* `enforceChallengeHost`: Optional parameter. When set, the app will check if the HTTP URL has this domain (or a subdomain of it) set as the host. 
-* `tokenExchangeEnabled`: If the token exchange feature is enabled. When set to false, the FCM token will not be converted, but sent directly to the server.
+```xml
+<application>
+   
+     ...
+   
+    <meta-data android:name="tiqr_config_token_exchange_base_url" android:value="${tiqr_config_token_exchange_base_url}"/>
+    <meta-data android:name="tiqr_config_base_url" android:value="${tiqr_config_base_url}"/>
+    <meta-data android:name="tiqr_config_protocol_version" android:value="${tiqr_config_protocol_version}"/>
+    <meta-data android:name="tiqr_config_protocol_compatibility_mode" android:value="${tiqr_config_protocol_compatibility_mode}"/>
+    <meta-data android:name="tiqr_config_enroll_path_param" android:value="${tiqr_config_enroll_path_param}"/>
+    <meta-data android:name="tiqr_config_auth_path_param" android:value="${tiqr_config_auth_path_param}"/>
+    <meta-data android:name="tiqr_config_enroll_scheme" android:value="${tiqr_config_enroll_scheme}"/>
+    <meta-data android:name="tiqr_config_auth_scheme" android:value="${tiqr_config_auth_scheme}"/>
+    <meta-data android:name="tiqr_config_token_exchange_enabled" android:value="${tiqr_config_token_exchange_enabled}"/>
+</application>
+```
+
+And the placeholder fillers to your `build.gradle.kts`, inside your `android.defaultConfig`:
+```groovy
+
+android {
+   defaultConfig {
+      
+      ...
+
+      manifestPlaceholders["tiqr_config_token_exchange_base_url"] = "https://tx.tiqr.org/"
+      manifestPlaceholders["tiqr_config_base_url"] = "https://demo.tiqr.org"
+      manifestPlaceholders["tiqr_config_protocol_version"] = "2"
+      manifestPlaceholders["tiqr_config_protocol_compatibility_mode"] =  "true"
+      manifestPlaceholders["tiqr_config_enforce_challenge_host"] = "tiqr.nl"
+      manifestPlaceholders["tiqr_config_enroll_path_param"] = "tiqrenroll"
+      manifestPlaceholders["tiqr_config_auth_path_param"] = "tiqrauth"
+      manifestPlaceholders["tiqr_config_enroll_scheme"] = "tiqrenroll"
+      manifestPlaceholders["tiqr_config_auth_scheme"] = "tiqrauth"
+      manifestPlaceholders["tiqr_config_token_exchange_enabled"] = "true"
+   }
+}
+```
+You can adjust the values here.
+
+The following metadata properties are supported:
+* `tiqr_config_token_exchange_base_url`: The base URL to the token exchange. This is only required if the token exchange is enabled (see later)
+* `tiqr_config_base_url`: The base URL for the API client.
+* `tiqr_config_protocol_version`: The main protocol version used by this client.
+* `tiqr_config_protocol_compatibility_mode`: If the client should support older protocols than the main protocol version.
+* `tiqr_config_enforce_challenge_host`: Optional parameter. When set, the app will check if the HTTP URL has this domain (or a subdomain of it) set as the host.
+* `tiqr_config_enroll_path_param`: You can also use HTTPS URLs for enrollment. In that case, this enrollment URL should start with this path parameter
+* `tiqr_config_auth_path_param`: You can also use HTTPS URLs for authentication. In that case, this authentication URL should start with this path parameter.
+* `tiqr_config_enroll_scheme`: The enrollment URL should start with this HTTP scheme. Do not add the :// to the end of it.
+* `tiqr_config_auth_scheme`: The authentication URL should start with this HTTP scheme. Do not add the :// to the end of it.
+* `tiqr_config_token_exchange_enabled`: If the token exchange feature is enabled. When set to false, the FCM token will not be converted, but sent directly to the server.
 
 # Making changes in library
 

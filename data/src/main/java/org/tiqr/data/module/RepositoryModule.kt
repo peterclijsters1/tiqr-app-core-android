@@ -31,6 +31,7 @@ package org.tiqr.data.module
 
 import android.content.res.Resources
 import androidx.annotation.VisibleForTesting
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -92,7 +93,7 @@ class TokenRepositoryModule {
     @Provides
     @Singleton
     internal fun provideTokenRepository(
-        api: TokenApi,
+        api: Lazy<TokenApi>,
         preferences: PreferenceService
     ): TokenRegistrarRepository = TokenRepository(api, preferences)
 }

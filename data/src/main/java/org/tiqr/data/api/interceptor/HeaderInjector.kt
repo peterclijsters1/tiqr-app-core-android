@@ -32,6 +32,7 @@ package org.tiqr.data.api.interceptor
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.tiqr.data.BuildConfig
+import org.tiqr.data.model.TiqrConfig
 import java.io.IOException
 
 /**
@@ -50,7 +51,7 @@ internal class HeaderInjector : Interceptor {
                 .newBuilder()
                 .apply {
                     header(HEADER_ACCEPT, HEADER_ACCEPT_VALUE)
-                    header(HEADER_PROTOCOL, BuildConfig.PROTOCOL_VERSION.toString())
+                    header(HEADER_PROTOCOL, TiqrConfig.protocolVersion.toString())
                 }
                 .run {
                     chain.proceed(this.build())

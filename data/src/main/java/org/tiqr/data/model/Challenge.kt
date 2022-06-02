@@ -48,7 +48,7 @@ sealed class Challenge {
  */
 @Parcelize
 data class EnrollmentChallenge(
-        override val protocolVersion: Int = BuildConfig.PROTOCOL_VERSION,
+        override val protocolVersion: Int = TiqrConfig.protocolVersion,
         override val identityProvider: IdentityProvider,
         override val identity: Identity,
         override val returnUrl: String?,
@@ -61,7 +61,7 @@ data class EnrollmentChallenge(
  */
 @Parcelize
 data class AuthenticationChallenge(
-        override val protocolVersion: Int = BuildConfig.PROTOCOL_VERSION,
+        override val protocolVersion: Int = TiqrConfig.protocolVersion,
         override val identityProvider: IdentityProvider,
         override val identity: Identity?,
         override val returnUrl: String?,
