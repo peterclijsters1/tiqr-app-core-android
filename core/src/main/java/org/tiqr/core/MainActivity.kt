@@ -93,7 +93,7 @@ open class MainActivity : BaseActivity<ActivityMainBinding>(),
 
             Navigation.setViewNavController(binding.bottombar, this)
         }
-        mainViewModel.executeTokenMigrationIfNeeded(this::getDeviceToken)
+        mainViewModel.executeTokenMigrationIfNeeded { getDeviceToken() }
         mainViewModel.challenge.observe(this) { result ->
             when (result) {
                 is ChallengeParseResult.Success -> {
