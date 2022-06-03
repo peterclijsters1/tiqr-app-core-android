@@ -38,7 +38,7 @@
     Zodra u daar om gevraagd wordt drukt u op <b>Scan</b>.]]></string>
 
     <!-- Scan -->
-    <string name="scan_button">Scannen</string>
+    <string name="scan_button">Scan</string>
     <string name="scan_permission_required_title">Camera permissie benodigd</string>
     <string name="scan_permission_required_message">Voor het scannen van een QR code, heeft tiqr toegang nodig tot de camera.</string>
     <string name="scan_permission_required_settings">Instellingen</string>
