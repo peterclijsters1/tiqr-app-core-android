@@ -7,10 +7,11 @@ on:
       - 'develop'
 env:
   IS_RELEASE: false
-  VERSION_FILE_NAME: core_version.txt
   TMP_SUFFIX: _updated
 jobs:
   publish-core:
+    env:
+      VERSION_FILE_NAME: core_version.txt
     name: Release build and publish tiqr-core
     runs-on: ubuntu-latest
     steps:
@@ -83,6 +84,8 @@ jobs:
 
   publish-data:
     name: Release build and publish tiqr-data
+    env:
+      VERSION_FILE_NAME: data_version.txt
     runs-on: ubuntu-latest
     needs: [publish-core]
     steps:
