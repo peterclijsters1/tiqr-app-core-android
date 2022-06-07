@@ -81,7 +81,7 @@ class AuthenticationUrlParams private constructor(
             }
             val username = uri.getQueryParameter("u") ?: return missingParameter("u")
             val protocolVersion = uri.getQueryParameter("v")?.toIntOrNull() ?: 0
-            val challenge = uri.getQueryParameter("c") ?: return missingParameter("c")
+            val challenge = uri.getQueryParameter("q") ?: return missingParameter("q")
             val sessionKey = uri.getQueryParameter("s") ?: return missingParameter("s")
             val serverIdentifier = uri.getQueryParameter("i") ?: return missingParameter("i")
             val returnUrl: String? = null
