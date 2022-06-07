@@ -239,6 +239,7 @@ class EnrollmentRepository(
                     is ApiResponse.Success -> handleResponse(request, body, secret, headers.tiqrProtocol())
                     is ApiResponse.Failure -> handleResponse(request, body, secret, headers.tiqrProtocol())
                     is ApiResponse.NetworkError -> {
+                        Timber.e(error, "Error completing enrollment, request to '${request.challenge.enrollmentUrl}' threw a network error")
                         EnrollmentCompleteFailure(
                                 reason = EnrollmentCompleteFailure.Reason.CONNECTION,
                                 title = resources.getString(R.string.error_enroll_title),
@@ -248,7 +249,7 @@ class EnrollmentRepository(
                         }
                     }
                     is ApiResponse.Error -> {
-                        Timber.e("Error completing enrollment, request was unsuccessful")
+                        Timber.e(error, "Error completing enrollment, request to '${request.challenge.enrollmentUrl}' was unsuccessful (code: $code)")
                         EnrollmentCompleteFailure(
                                 reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
                                 title = resources.getString(R.string.error_enroll_title),
