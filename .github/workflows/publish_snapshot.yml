@@ -77,6 +77,7 @@ jobs:
           sed "s/${CURRENT_VERSION_VALUE}/${NEXT_VERSION_VALUE}/g" ${{ env.VERSION_FILE_NAME }} > ${{ env.VERSION_FILE_NAME }}${{ env.TMP_SUFFIX }}
           rm ${{ env.VERSION_FILE_NAME }}
           mv ${{ env.VERSION_FILE_NAME }}${{ env.TMP_SUFFIX }} ${{ env.VERSION_FILE_NAME }}
+          git pull
           git add ${{ env.VERSION_FILE_NAME }}
           git commit -m "Version update"
           git push
@@ -133,6 +134,7 @@ jobs:
           sed "s/${CURRENT_VERSION_VALUE}/${NEXT_VERSION_VALUE}/g" ${{ env.VERSION_FILE_NAME }} > ${{ env.VERSION_FILE_NAME }}${{ env.TMP_SUFFIX }}
           rm ${{ env.VERSION_FILE_NAME }}
           mv ${{ env.VERSION_FILE_NAME }}${{ env.TMP_SUFFIX }} ${{ env.VERSION_FILE_NAME }}
+          git pull
           git add ${{ env.VERSION_FILE_NAME }}
           git commit -m "Version update"
           git push
