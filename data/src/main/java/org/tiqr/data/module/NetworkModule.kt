@@ -153,27 +153,17 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    @BaseScope
-    internal fun provideBaseRetrofit(): Retrofit {
-        return Retrofit.Builder()
-                .baseUrl(TiqrConfig.baseUrl) //Dummy base URL, since each api call uses its own url
-                .build()
-    }
-
-    @Provides
-    @Singleton
     @ApiScope
     internal fun provideApiRetrofit(
-            @BaseScope retrofit: Retrofit,
             @ApiScope client: Lazy<OkHttpClient>,
             moshi: Moshi
     ): Retrofit {
-        return retrofit.newBuilder()
+        return Retrofit.Builder()
                 .callFactory { client.get().newCall(it) }
                 .addCallAdapterFactory(ApiResponseAdapterFactory.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(if (TiqrConfig.protocolCompatibilityMode) MoshiConverterFactory.create(moshi).asLenient() else MoshiConverterFactory.create(moshi))
-                .baseUrl(TiqrConfig.baseUrl) //Dummy base URL, since each api call uses its own url
+                .baseUrl("https://localhost") //Dummy base URL, since each api call uses its own url
                 .build()
     }
 
@@ -181,12 +171,11 @@ internal object NetworkModule {
     @Singleton
     @TokenScope
     internal fun provideTokenRetrofit(
-            @BaseScope retrofit: Retrofit,
             @TokenScope client: Lazy<OkHttpClient>
     ): Retrofit {
         val url = TiqrConfig.tokenExchangeBaseUrl
             ?: throw RuntimeException("Token exchange base URL parameter should be set if the token exchange is enabled!")
-        return retrofit.newBuilder()
+        return Retrofit.Builder()
                 .callFactory { client.get().newCall(it) }
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .baseUrl(url)
