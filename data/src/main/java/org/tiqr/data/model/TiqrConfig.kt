@@ -14,7 +14,7 @@ object TiqrConfig {
     var protocolCompatibilityMode: Boolean = true
         private set
 
-    var enforceChallengeHost: String? = null
+    var enforceChallengeHosts: String? = null
         private set
 
     var enrollPathParam: String? = null
@@ -45,7 +45,7 @@ object TiqrConfig {
         protocolVersion = bundle.getInt("tiqr_config_protocol_version", 1)
         protocolCompatibilityMode =
             bundle.getBoolean("tiqr_config_protocol_compatibility_mode", true)
-        enforceChallengeHost = bundle.getString("tiqr_config_enforce_challenge_host")
+        enforceChallengeHosts = bundle.getString("tiqr_config_enforce_challenge_hosts")
         enrollPathParam = bundle.getString("tiqr_config_enroll_path_param")
         authPathParam = bundle.getString("tiqr_config_auth_path_param")
         enrollScheme = bundle.getString("tiqr_config_enroll_scheme")
