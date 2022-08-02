@@ -37,7 +37,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.tiqr.data.BuildConfig
 import org.tiqr.data.R
 import org.tiqr.data.api.TiqrApi
 import org.tiqr.data.api.response.ApiResponse
@@ -86,20 +85,29 @@ class EnrollmentRepository(
                 Timber.w("Metadata parameter not found on the enrollment URL!")
                 return false
             }
-            if (!TiqrConfig.enforceChallengeHost.isNullOrBlank()) {
+            if (!TiqrConfig.enforceChallengeHosts.isNullOrBlank()) {
                 val uriHost = uri.host?.lowercase()
-                if (uriHost == null ||
-                    (uriHost != TiqrConfig.enforceChallengeHost && uriHost.endsWith("." + TiqrConfig.enforceChallengeHost))
-                ) {
-                    Timber.w("Original URI host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHost}, but it was actually: $uriHost.");
+                var matchesUriHost = false
+                TiqrConfig.enforceChallengeHosts!!.split(",").forEach { enforcedHost ->
+                    if (uriHost != null && (uriHost == enforcedHost || uriHost.endsWith(".$enforcedHost"))) {
+                        matchesUriHost = true
+                    }
+                }
+                if (!matchesUriHost) {
+                    Timber.w("Original URI host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHosts}, but it was actually: $uriHost.");
                     return false
                 }
+
                 // Also enforce for metadata host
                 val metadataHost = Uri.parse(metadataQuery)?.host
-                if (metadataHost == null ||
-                    (metadataHost != TiqrConfig.enforceChallengeHost && metadataHost.endsWith("." + TiqrConfig.enforceChallengeHost))
-                ) {
-                    Timber.w("Metadata host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHost}, but it was actually: $metadataHost.");
+                var matchesMetadataHost = false
+                TiqrConfig.enforceChallengeHosts!!.split(",").forEach { enforcedHost ->
+                    if (metadataHost != null && (metadataHost == enforcedHost || metadataHost.endsWith(".$enforcedHost"))) {
+                        matchesMetadataHost = true
+                    }
+                }
+                if (!matchesMetadataHost) {
+                    Timber.w("Metadata host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHosts}, but it was actually: $metadataHost.");
                     return false
                 }
             }

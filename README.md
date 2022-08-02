@@ -38,7 +38,6 @@ To use SURF library in your project:
      ...
    
     <meta-data android:name="tiqr_config_token_exchange_base_url" android:value="${tiqr_config_token_exchange_base_url}"/>
-    <meta-data android:name="tiqr_config_base_url" android:value="${tiqr_config_base_url}"/>
     <meta-data android:name="tiqr_config_protocol_version" android:value="${tiqr_config_protocol_version}"/>
     <meta-data android:name="tiqr_config_protocol_compatibility_mode" android:value="${tiqr_config_protocol_compatibility_mode}"/>
     <meta-data android:name="tiqr_config_enroll_path_param" android:value="${tiqr_config_enroll_path_param}"/>
@@ -58,10 +57,9 @@ android {
       ...
 
       manifestPlaceholders["tiqr_config_token_exchange_base_url"] = "https://tx.tiqr.org/"
-      manifestPlaceholders["tiqr_config_base_url"] = "https://demo.tiqr.org"
       manifestPlaceholders["tiqr_config_protocol_version"] = "2"
       manifestPlaceholders["tiqr_config_protocol_compatibility_mode"] =  "true"
-      manifestPlaceholders["tiqr_config_enforce_challenge_host"] = "tiqr.nl"
+      manifestPlaceholders["tiqr_config_enforce_challenge_hosts"] = "tiqr.nl,surfconext.nl"
       manifestPlaceholders["tiqr_config_enroll_path_param"] = "tiqrenroll"
       manifestPlaceholders["tiqr_config_auth_path_param"] = "tiqrauth"
       manifestPlaceholders["tiqr_config_enroll_scheme"] = "tiqrenroll"
@@ -74,10 +72,9 @@ You can adjust the values here.
 
 The following metadata properties are supported:
 * `tiqr_config_token_exchange_base_url`: The base URL to the token exchange. This is only required if the token exchange is enabled (see later)
-* `tiqr_config_base_url`: The base URL for the API client.
 * `tiqr_config_protocol_version`: The main protocol version used by this client.
 * `tiqr_config_protocol_compatibility_mode`: If the client should support older protocols than the main protocol version.
-* `tiqr_config_enforce_challenge_host`: Optional parameter. When set, the app will check if the HTTP URL has this domain (or a subdomain of it) set as the host.
+* `tiqr_config_enforce_challenge_hosts`: Optional parameter. When set, the app will check if the HTTP URL has this domain (or a subdomain of it) set as the host. You can set multiple hosts by separating them with a comma.
 * `tiqr_config_enroll_path_param`: You can also use HTTPS URLs for enrollment. In that case, this enrollment URL should start with this path parameter
 * `tiqr_config_auth_path_param`: You can also use HTTPS URLs for authentication. In that case, this authentication URL should start with this path parameter.
 * `tiqr_config_enroll_scheme`: The enrollment URL should start with this HTTP scheme. Do not add the :// to the end of it.

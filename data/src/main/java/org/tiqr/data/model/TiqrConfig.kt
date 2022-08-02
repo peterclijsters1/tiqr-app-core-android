@@ -8,16 +8,13 @@ object TiqrConfig {
     var tokenExchangeBaseUrl: String? = null
         private set
 
-    lateinit var baseUrl: String
-        private set
-
     var protocolVersion: Int = 1
         private set
 
     var protocolCompatibilityMode: Boolean = true
         private set
 
-    var enforceChallengeHost: String? = null
+    var enforceChallengeHosts: String? = null
         private set
 
     var enrollPathParam: String? = null
@@ -45,12 +42,10 @@ object TiqrConfig {
         val excPrefix =
             "The following metadata parameter should be provided in the AndroidManifest.xml of your app: "
         tokenExchangeBaseUrl = bundle.getString("tiqr_config_token_exchange_base_url")
-        baseUrl = bundle.getString("tiqr_config_base_url")
-            ?: throw RuntimeException("$excPrefix: 'tiqr_config_base_url'")
         protocolVersion = bundle.getInt("tiqr_config_protocol_version", 1)
         protocolCompatibilityMode =
             bundle.getBoolean("tiqr_config_protocol_compatibility_mode", true)
-        enforceChallengeHost = bundle.getString("tiqr_config_enforce_challenge_host")
+        enforceChallengeHosts = bundle.getString("tiqr_config_enforce_challenge_hosts")
         enrollPathParam = bundle.getString("tiqr_config_enroll_path_param")
         authPathParam = bundle.getString("tiqr_config_auth_path_param")
         enrollScheme = bundle.getString("tiqr_config_enroll_scheme")

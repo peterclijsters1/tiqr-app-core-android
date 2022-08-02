@@ -2,7 +2,6 @@ package org.tiqr.data.model
 
 import android.net.Uri
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.tiqr.data.BuildConfig
 import timber.log.Timber
 
 class AuthenticationUrlParams private constructor(
@@ -61,12 +60,16 @@ class AuthenticationUrlParams private constructor(
                 Timber.w(ex, "Unable to parse URL: '$url'")
                 return null
             }
-            if (!TiqrConfig.enforceChallengeHost.isNullOrBlank()) {
+            if (!TiqrConfig.enforceChallengeHosts.isNullOrBlank()) {
                 val host = uri.host?.lowercase()
-                if (host == null ||
-                    (host != TiqrConfig.enforceChallengeHost && host.endsWith("." + TiqrConfig.enforceChallengeHost))
-                ) {
-                    Timber.w("Host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHost}, but it was actually: $host.");
+                var matchesHost = false
+                TiqrConfig.enforceChallengeHosts!!.split(",").forEach { enforcedHost ->
+                    if (host != null && (host == enforcedHost || host.endsWith(".$enforcedHost"))) {
+                        matchesHost = true
+                    }
+                }
+                if (!matchesHost) {
+                    Timber.w("Host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHosts}, but it was actually: $host.");
                     return null
                 }
             }
