@@ -37,6 +37,19 @@ class AuthenticationUrlParams private constructor(
                 Timber.w("Could not parse old format URL.")
                 return null
             }
+            if (!TiqrConfig.enforceChallengeHosts.isNullOrBlank()) {
+                val host = httpUrl.host.lowercase()
+                var matchesHost = false
+                TiqrConfig.enforceChallengeHosts!!.split(",").forEach { enforcedHost ->
+                    if (host == enforcedHost || host.endsWith(".$enforcedHost")) {
+                        matchesHost = true
+                    }
+                }
+                if (!matchesHost) {
+                    Timber.w("Host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHosts}, but it was actually: $host.");
+                    return null
+                }
+            }
             val username = httpUrl.username
             val protocolVersion = httpUrl.pathSegments.getOrNull(3)?.toInt() ?: 0
             val sessionKey = httpUrl.pathSegments[0]

@@ -45,11 +45,7 @@ import org.tiqr.data.repository.base.ChallengeRepository
 import org.tiqr.data.service.DatabaseService
 import org.tiqr.data.service.PreferenceService
 import org.tiqr.data.service.SecretService
-import org.tiqr.data.util.extension.isHttpOrHttps
-import org.tiqr.data.util.extension.tiqrProtocol
-import org.tiqr.data.util.extension.toDecodedUrlStringOrNull
-import org.tiqr.data.util.extension.toHexString
-import org.tiqr.data.util.extension.toUrlOrNull
+import org.tiqr.data.util.extension.*
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
@@ -58,11 +54,11 @@ import java.util.*
  * Repository to handle enrollment challenges.
  */
 class EnrollmentRepository(
-        override val api: TiqrApi,
-        override val resources: Resources,
-        override val database: DatabaseService,
-        override val secretService: SecretService,
-        override val preferences: PreferenceService
+    override val api: TiqrApi,
+    override val resources: Resources,
+    override val database: DatabaseService,
+    override val secretService: SecretService,
+    override val preferences: PreferenceService
 ) : ChallengeRepository<EnrollmentChallenge>() {
     override val challengeScheme: String = "${TiqrConfig.enrollScheme}://"
 
@@ -72,7 +68,30 @@ class EnrollmentRepository(
     override fun isValidChallenge(rawChallenge: String): Boolean {
         if (rawChallenge.startsWith(challengeScheme)) {
             // Old format enrollment URL, starts with a custom scheme
-            return true
+            if (!TiqrConfig.enforceChallengeHosts.isNullOrBlank()) {
+                // Check if the metadata URL host is valid
+                try {
+                    val metadataUri = Uri.parse(rawChallenge.removePrefix(challengeScheme))
+                    val metadataHost = metadataUri.host
+                    var matchesMetadataHost = false
+                    TiqrConfig.enforceChallengeHosts!!.split(",").forEach { enforcedHost ->
+                        if (metadataHost != null && (metadataHost == enforcedHost || metadataHost.endsWith(".$enforcedHost"))) {
+                            matchesMetadataHost = true
+                        }
+                    }
+                    return if (!matchesMetadataHost) {
+                        Timber.w("Enrollment metadata URI host was expected to be a subdomain of: ${TiqrConfig.enforceChallengeHosts}, but it was actually: $metadataHost.");
+                        false
+                    } else {
+                        true
+                    }
+                } catch (ex: Exception) {
+                    Timber.w(ex, "Unable to parse metadata URI")
+                    return false
+                }
+            } else {
+                return true
+            }
         }
         try {
             val uri = Uri.parse(rawChallenge)
@@ -102,7 +121,10 @@ class EnrollmentRepository(
                 val metadataHost = Uri.parse(metadataQuery)?.host
                 var matchesMetadataHost = false
                 TiqrConfig.enforceChallengeHosts!!.split(",").forEach { enforcedHost ->
-                    if (metadataHost != null && (metadataHost == enforcedHost || metadataHost.endsWith(".$enforcedHost"))) {
+                    if (metadataHost != null && (metadataHost == enforcedHost || metadataHost.endsWith(
+                            ".$enforcedHost"
+                        ))
+                    ) {
                         matchesMetadataHost = true
                     }
                 }
@@ -124,7 +146,7 @@ class EnrollmentRepository(
     override suspend fun parseChallenge(rawChallenge: String): ChallengeParseResult<EnrollmentChallenge, EnrollmentParseFailure> {
         // Check challenge validity
         val isValid = isValidChallenge(rawChallenge)
-        val url : HttpUrl? = if (rawChallenge.startsWith(challengeScheme)) {
+        val url: HttpUrl? = if (rawChallenge.startsWith(challengeScheme)) {
             // Old format URL, with custom scheme
             rawChallenge.substring(challengeScheme.length).toHttpUrlOrNull()
         } else {
@@ -149,31 +171,35 @@ class EnrollmentRepository(
                 if (isSuccessful && enroll != null) {
                     val identityProvider = enroll.service.run {
                         IdentityProvider(
-                                displayName = displayName,
-                                identifier = identifier,
-                                authenticationUrl = authenticationUrl,
-                                infoUrl = infoUrl,
-                                ocraSuite = ocraSuite,
-                                logo = logoUrl
+                            displayName = displayName,
+                            identifier = identifier,
+                            authenticationUrl = authenticationUrl,
+                            infoUrl = infoUrl,
+                            ocraSuite = ocraSuite,
+                            logo = logoUrl
                         )
                     }
 
                     val identity = enroll.identity.run {
                         Identity(
-                                displayName = displayName,
-                                identifier = identifier
+                            displayName = displayName,
+                            identifier = identifier
                         )
                     }
 
                     // Check if identity is already enrolled
                     database.getIdentity(
-                            identityId = identity.identifier,
-                            identityProviderId = identityProvider.identifier
+                        identityId = identity.identifier,
+                        identityProviderId = identityProvider.identifier
                     )?.let {
                         return EnrollmentParseFailure(
-                                reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
-                                title = resources.getString(R.string.error_enroll_title),
-                                message = resources.getString(R.string.error_enroll_duplicate_identity, identity.displayName, identityProvider.displayName)
+                            reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
+                            title = resources.getString(R.string.error_enroll_title),
+                            message = resources.getString(
+                                R.string.error_enroll_duplicate_identity,
+                                identity.displayName,
+                                identityProvider.displayName
+                            )
                         ).run {
                             ChallengeParseResult.failure(this)
                         }
@@ -181,20 +207,21 @@ class EnrollmentRepository(
 
                     withContext(Dispatchers.IO) {
                         EnrollmentChallenge(
-                                identityProvider = identityProvider,
-                                identity = identity,
-                                returnUrl = url.query?.toDecodedUrlStringOrNull(),
-                                enrollmentUrl = enroll.service.enrollmentUrl,
-                                enrollmentHost = enroll.service.enrollmentUrl.toUrlOrNull()?.host ?: enroll.service.enrollmentUrl
+                            identityProvider = identityProvider,
+                            identity = identity,
+                            returnUrl = url.query?.toDecodedUrlStringOrNull(),
+                            enrollmentUrl = enroll.service.enrollmentUrl,
+                            enrollmentHost = enroll.service.enrollmentUrl.toUrlOrNull()?.host
+                                ?: enroll.service.enrollmentUrl
                         ).run {
                             ChallengeParseResult.success(this)
                         }
                     }
                 } else {
                     return EnrollmentParseFailure(
-                            reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_invalid_qr)
+                        reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_invalid_qr)
                     ).run {
                         ChallengeParseResult.failure(this)
                     }
@@ -203,25 +230,25 @@ class EnrollmentRepository(
         } catch (e: Exception) {
             Timber.e(e, "Error parsing challenge")
 
-            return when(e) {
+            return when (e) {
                 is IOException ->
                     EnrollmentParseFailure(
-                            reason = EnrollmentParseFailure.Reason.CONNECTION,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_connection)
+                        reason = EnrollmentParseFailure.Reason.CONNECTION,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_connection)
                     )
                 is JsonDataException,
                 is JsonEncodingException ->
                     EnrollmentParseFailure(
-                            reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_invalid_qr)
+                        reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_invalid_qr)
                     )
                 else ->
                     EnrollmentParseFailure(
-                            reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_invalid_qr)
+                        reason = EnrollmentParseFailure.Reason.INVALID_CHALLENGE,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_invalid_qr)
                     )
             }.run {
                 ChallengeParseResult.failure(this)
@@ -238,30 +265,46 @@ class EnrollmentRepository(
 
             // Perform API call and return result
             api.enroll(
-                    url = request.challenge.enrollmentUrl,
-                    secret = secret.value.encoded.toHexString(),
-                    language = Locale.getDefault().language,
-                    notificationAddress = preferences.notificationToken
+                url = request.challenge.enrollmentUrl,
+                secret = secret.value.encoded.toHexString(),
+                language = Locale.getDefault().language,
+                notificationAddress = preferences.notificationToken
             ).run {
                 when (this) {
-                    is ApiResponse.Success -> handleResponse(request, body, secret, headers.tiqrProtocol())
-                    is ApiResponse.Failure -> handleResponse(request, body, secret, headers.tiqrProtocol())
+                    is ApiResponse.Success -> handleResponse(
+                        request,
+                        body,
+                        secret,
+                        headers.tiqrProtocol()
+                    )
+                    is ApiResponse.Failure -> handleResponse(
+                        request,
+                        body,
+                        secret,
+                        headers.tiqrProtocol()
+                    )
                     is ApiResponse.NetworkError -> {
-                        Timber.e(error, "Error completing enrollment, request to '${request.challenge.enrollmentUrl}' threw a network error")
+                        Timber.e(
+                            error,
+                            "Error completing enrollment, request to '${request.challenge.enrollmentUrl}' threw a network error"
+                        )
                         EnrollmentCompleteFailure(
-                                reason = EnrollmentCompleteFailure.Reason.CONNECTION,
-                                title = resources.getString(R.string.error_enroll_title),
-                                message = resources.getString(R.string.error_enroll_connection)
+                            reason = EnrollmentCompleteFailure.Reason.CONNECTION,
+                            title = resources.getString(R.string.error_enroll_title),
+                            message = resources.getString(R.string.error_enroll_connection)
                         ).run {
                             ChallengeCompleteResult.failure(this)
                         }
                     }
                     is ApiResponse.Error -> {
-                        Timber.e(error, "Error completing enrollment, request to '${request.challenge.enrollmentUrl}' was unsuccessful (code: $code)")
+                        Timber.e(
+                            error,
+                            "Error completing enrollment, request to '${request.challenge.enrollmentUrl}' was unsuccessful (code: $code)"
+                        )
                         EnrollmentCompleteFailure(
-                                reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
-                                title = resources.getString(R.string.error_enroll_title),
-                                message = resources.getString(R.string.error_enroll_invalid_response)
+                            reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
+                            title = resources.getString(R.string.error_enroll_title),
+                            message = resources.getString(R.string.error_enroll_invalid_response)
                         ).run {
                             ChallengeCompleteResult.failure(this)
                         }
@@ -274,22 +317,22 @@ class EnrollmentRepository(
             return when (e) {
                 is IOException ->
                     EnrollmentCompleteFailure(
-                            reason = EnrollmentCompleteFailure.Reason.CONNECTION,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_connection)
+                        reason = EnrollmentCompleteFailure.Reason.CONNECTION,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_connection)
                     )
                 is JsonDataException,
                 is JsonEncodingException ->
                     EnrollmentCompleteFailure(
-                            reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_invalid_response)
+                        reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_invalid_response)
                     )
                 else ->
                     EnrollmentCompleteFailure(
-                            reason = EnrollmentCompleteFailure.Reason.UNKNOWN,
-                            title = resources.getString(R.string.error_enroll_title),
-                            message = resources.getString(R.string.error_enroll_invalid_response)
+                        reason = EnrollmentCompleteFailure.Reason.UNKNOWN,
+                        title = resources.getString(R.string.error_enroll_title),
+                        message = resources.getString(R.string.error_enroll_invalid_response)
                     )
             }.run {
                 ChallengeCompleteResult.failure(this)
@@ -297,11 +340,16 @@ class EnrollmentRepository(
         }
     }
 
-    private suspend fun handleResponse(request: ChallengeCompleteRequest<EnrollmentChallenge>, response: EnrollmentResponse?, secret: Secret, protocolVersion: Int): ChallengeCompleteResult<ChallengeCompleteFailure> {
+    private suspend fun handleResponse(
+        request: ChallengeCompleteRequest<EnrollmentChallenge>,
+        response: EnrollmentResponse?,
+        secret: Secret,
+        protocolVersion: Int
+    ): ChallengeCompleteResult<ChallengeCompleteFailure> {
         val result = response ?: return EnrollmentCompleteFailure(
-                reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
-                title = resources.getString(R.string.error_enroll_title),
-                message = resources.getString(R.string.error_enroll_invalid_response)
+            reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
+            title = resources.getString(R.string.error_enroll_title),
+            message = resources.getString(R.string.error_enroll_invalid_response)
         ).run {
             Timber.e("Error completing enrollment, API response is empty")
             ChallengeCompleteResult.failure(this)
@@ -310,9 +358,12 @@ class EnrollmentRepository(
         if (!TiqrConfig.protocolCompatibilityMode) {
             if (protocolVersion <= TiqrConfig.protocolVersion) {
                 return EnrollmentCompleteFailure(
-                        reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
-                        title = resources.getString(R.string.error_enroll_title),
-                        message = resources.getString(R.string.error_enroll_invalid_protocol, "v$protocolVersion")
+                    reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
+                    title = resources.getString(R.string.error_enroll_title),
+                    message = resources.getString(
+                        R.string.error_enroll_invalid_protocol,
+                        "v$protocolVersion"
+                    )
                 ).run {
                     Timber.e("Error completing enrollment, unsupported protocol version: v$protocolVersion")
                     ChallengeCompleteResult.failure(this)
@@ -322,9 +373,12 @@ class EnrollmentRepository(
 
         if (result.code != EnrollmentResponse.Code.ENROLL_RESULT_SUCCESS) {
             return EnrollmentCompleteFailure(
-                    reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
-                    title = resources.getString(R.string.error_enroll_title),
-                    message = resources.getString(R.string.error_enroll_invalid_response_code, result.code)
+                reason = EnrollmentCompleteFailure.Reason.INVALID_RESPONSE,
+                title = resources.getString(R.string.error_enroll_title),
+                message = resources.getString(
+                    R.string.error_enroll_invalid_response_code,
+                    result.code
+                )
             ).run {
                 Timber.e("Error completing enrollment, unexpected response code")
                 ChallengeCompleteResult.failure(this)
@@ -336,25 +390,27 @@ class EnrollmentRepository(
         if (identityProviderId == -1L) {
             Timber.e("Error completing enrollment, saving identity provider failed")
             return EnrollmentCompleteFailure(
-                    title = resources.getString(R.string.error_enroll_title),
-                    message = resources.getString(R.string.error_enroll_saving_identity_provider)
+                title = resources.getString(R.string.error_enroll_title),
+                message = resources.getString(R.string.error_enroll_saving_identity_provider)
             ).run {
                 ChallengeCompleteResult.failure(this)
             }
         }
         // Then insert the Identity using the id from above
-        val identityId = database.insertIdentity(request.challenge.identity.copy(identityProvider = identityProviderId))
+        val identityId =
+            database.insertIdentity(request.challenge.identity.copy(identityProvider = identityProviderId))
         if (identityId == -1L) {
             Timber.e("Error completing enrollment, saving identity failed")
             return EnrollmentCompleteFailure(
-                    title = resources.getString(R.string.error_enroll_title),
-                    message = resources.getString(R.string.error_enroll_saving_identity)
+                title = resources.getString(R.string.error_enroll_title),
+                message = resources.getString(R.string.error_enroll_saving_identity)
             ).run {
                 ChallengeCompleteResult.failure(this)
             }
         }
         // Copy identity with inserted id's
-        val identity = request.challenge.identity.copy(id = identityId, identityProvider = identityProviderId)
+        val identity =
+            request.challenge.identity.copy(id = identityId, identityProvider = identityProviderId)
 
         // Save secrets
         val sessionKey = secretService.createSessionKey(request.password)
