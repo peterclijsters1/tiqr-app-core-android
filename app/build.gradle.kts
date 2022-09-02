@@ -87,6 +87,7 @@ dependencies {
 
     implementation(project(":core"))
     implementation(project(":data"))
+
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
