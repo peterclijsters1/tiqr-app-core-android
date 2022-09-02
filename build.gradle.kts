@@ -11,7 +11,7 @@ buildscript {
         classpath(libs.dagger.hilt.gradle)
         classpath(libs.androidx.navigation.gradle)
         classpath(libs.google.gms.gradle)
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
     }
 }
 
