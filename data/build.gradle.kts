@@ -8,6 +8,10 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
+if (JavaVersion.current() < JavaVersion.VERSION_11) {
+    throw GradleException("Please use JDK ${JavaVersion.VERSION_11} or above")
+}
+
 val secureProperties = loadCustomProperties(file("../local.properties"))
 
 fun loadCustomProperties(file: File): java.util.Properties {
@@ -58,12 +62,12 @@ android {
         }
 
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
 
         }
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = JavaVersion.VERSION_11.toString()
         }
     }
 
