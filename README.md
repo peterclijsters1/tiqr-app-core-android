@@ -10,10 +10,20 @@ To use SURF library in your project:
 
 2. Add submodule to your `settings.gradle` or `settings.gradle.kts`
 ```
-    implementation("org.tiqr:core:A.B.C")
-    implementation("org.tiqr:data:X.Y.Z")
+    include(":core")
+    project(":core").projectDir = File("app-core/core")
+
+    include(":data")
+    project(":data").projectDir = File("app-core/data")
 ```
-3. Setup Coil's ImageLoader
+3. Implement the core and data project to be used by your app in `build.gradle` or `build.gradle.kts`
+```
+    
+    implementation(project(":data"))
+    implementation(project(":core"))
+    
+```
+4. Setup Coil's ImageLoader
 ```
     Coil.setImageLoader(ImageLoader.Builder(context = this)
         .crossfade(enable = true)
