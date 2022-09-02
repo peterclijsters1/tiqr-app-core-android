@@ -6,18 +6,24 @@ SURF.nl library for Android
 
 To use SURF library in your project:
 
-1. Add sonatype to repositories
+1. Add the repository as submodule to your project
+
+2. Add submodule to your `settings.gradle` or `settings.gradle.kts`
 ```
-   maven {
-        setUrl("https://s01.oss.sonatype.org/content/repositories/releases/")
-   }
+    include(":core")
+    project(":core").projectDir = File("app-core/core")
+
+    include(":data")
+    project(":data").projectDir = File("app-core/data")
 ```
-2. Add core and data dependencies (versions might be different)
+3. Implement the core and data project to be used by your app in `build.gradle` or `build.gradle.kts`
 ```
-    implementation("org.tiqr:core:A.B.C")
-    implementation("org.tiqr:data:X.Y.Z")
+    
+    implementation(project(":data"))
+    implementation(project(":core"))
+    
 ```
-3. Setup Coil's ImageLoader
+4. Setup Coil's ImageLoader
 ```
     Coil.setImageLoader(ImageLoader.Builder(context = this)
         .crossfade(enable = true)
@@ -85,9 +91,7 @@ The following metadata properties are supported:
 
 1. Make changes in the code
 
-2. Go to https://github.com/SURFnet/tiqr-app-core-android/actions and trigger appropriate workflow. If you are debugging client apps - trigger SNAPSHOT flow,
-   if you think that your changes are ready to be released to public - trigger RELEASE flow. If you made changes only in core - trigger CORE flow, if you made changes 
-   to data module - you have to trigger both DATA and CORE flows, as core depends on data
+2. Go to https://github.com/Tiqr/tiqr-app-core-android and make a PR
 
 # Running the tests
 

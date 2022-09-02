@@ -7,8 +7,6 @@ plugins {
     id("kotlin-parcelize")
     id("dagger.hilt.android.plugin")
     id("androidx.navigation.safeargs.kotlin")
-    `maven-publish`
-    signing
 }
 
 android {
@@ -115,98 +113,3 @@ val secureProperties = loadCustomProperties(file("../local.properties"))
 }
 
 group = "org.tiqr"
-
-version =
-    if (System.getenv("CORE_VERSION") == null) {
-       "1.0.0"
-    } else if (System.getenv("IS_RELEASE") == "true") {
-        System.getenv("CORE_VERSION").substring(0, System.getenv("CORE_VERSION").indexOf("-"))
-    } else {
-        System.getenv("CORE_VERSION").replace("-BETA-", ".").plus("-SNAPSHOT")
-    }
-
-tasks {
-    register("sourcesJar", Jar::class) {
-        archiveClassifier.set("sources")
-        from(android.sourceSets.getByName("main").java.srcDirs)
-    }
-}
-publishing {
-    publications {
-        create<MavenPublication>("core") {
-            artifactId = "core"
-
-            afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
-            artifact(tasks.getByName("sourcesJar"))
-
-            pom {
-                name.set("core")
-                url.set("https://github.com/SURFnet/tiqr-app-core-android")
-                description.set("refactoring original tiqr project")
-                developers {
-                    developer {
-                        name.set("sara hachem")
-                        email.set("sara@egeniq.com")
-                    }
-                    developer {
-                        name.set("Dmitry Kovalenko")
-                        email.set("dima@egeniq.com")
-                    }
-                }
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                scm {
-                    connection.set("https://github.com/SURFnet/tiqr-app-core-android.git")
-                    url.set("https://github.com/SURFnet/tiqr-app-core-android")
-                }
-
-                withXml {
-                    fun groovy.util.Node.addDependency(dependency: Dependency, scope: String) {
-                        appendNode("dependency").apply {
-                            appendNode("groupId", dependency.group)
-                            appendNode("artifactId", dependency.name)
-                            appendNode("version", dependency.version)
-                            appendNode("scope", scope)
-                        }
-                    }
-
-                    asNode().appendNode("dependencies").let { dependencies ->
-                        // List all "api" dependencies as "compile" dependencies
-                        configurations.api.get().allDependencies.forEach {
-                            dependencies.addDependency(it, "compile")
-                        }
-                        // List all "implementation" dependencies as "runtime" dependencies
-                        configurations.implementation.get().allDependencies.forEach {
-                            dependencies.addDependency(it, "runtime")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "sonatype"
-            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/releases/")
-            val snapshotRepo = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            url = uri(if (version.toString().contains("SNAPSHOT")) snapshotRepo else releasesRepoUrl)
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_PASSWORD")
-            }
-        }
-    }
-
-    signing {
-        val signingKeyId = System.getenv("SIGNING_KEY_ID")
-        val signingKey = System.getenv("SIGNING_KEY")
-        val signingPassword = System.getenv("SIGNING_PASSWORD")
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-        sign(publishing.publications["core"])
-    }
-}
